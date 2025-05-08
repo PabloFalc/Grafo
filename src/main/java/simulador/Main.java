@@ -14,7 +14,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Criar um texto
-        Label label = new Label("Hello, JavaFX 24 + JDK 22!");
+        Label label = new Label("Simulador");
 
         // Colocar o texto no layout
         StackPane root = new StackPane(label);
