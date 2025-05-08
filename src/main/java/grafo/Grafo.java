@@ -38,7 +38,7 @@ public class Grafo {
         return atual;
     }
 
-    public Aresta[] obterArestasDe(Vertice vertice){
-
+    public Lista<Aresta> obterArestasDe(Vertice vertice){
+        return vertice.getArestasDeSaida();
     }
 }

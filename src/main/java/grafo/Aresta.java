@@ -27,7 +27,14 @@ public class Aresta {
 
 
 
-
+    public Aresta(Vertice source, Vertice target, int length, double travel_time, boolean oneway, int maxspeed) {
+        this.source = source;
+        this.target = target;
+        this.length = length;
+        this.travel_time = travel_time;
+        this.oneway = oneway;
+        this.maxspeed = maxspeed;
+    }
 
 
 }
