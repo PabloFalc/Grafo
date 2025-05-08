@@ -1,7 +1,9 @@
 package estruturas.lista;
 
 import estruturas.No;
+import lombok.Getter;
 
+@Getter
 public class Lista<Tipo>{
     public No<Tipo> head,tail;
     public int tamanho;
@@ -12,7 +14,7 @@ public class Lista<Tipo>{
         this.tamanho = 0;
     }
 
-    public boolean add(Tipo valor, int pos){
+    public boolean addComPos(Tipo valor, int pos){
         if (pos < 0 || pos > tamanho) {
             return false;
         }
@@ -44,6 +46,21 @@ public class Lista<Tipo>{
         tamanho++;
         return true;
     }
+
+    public boolean add(Tipo valor){
+        No<Tipo> novo = new No<>(valor);
+
+        if(this.head == null){
+            this.head = novo;
+            return  true;
+        }
+
+        novo.setProx(this.head);
+        this.head.setAnt(novo);
+        this.head = novo;
+        return true;
+    }
+
     public void imprimir() {
         No<Tipo> atual = this.head;
         No<Tipo> atual2 = this.tail;
@@ -98,4 +115,20 @@ public class Lista<Tipo>{
         tamanho--;
         return removido;
     }
+
+    public Tipo get(int pos) {
+        if (pos < 0 || pos >= tamanho) {
+            return null;
+        }
+
+        No<Tipo> atual = this.head;
+
+        for (int i = 0; i < pos ; i++) {
+            atual = atual.getProx();
+        }
+
+        return atual.getValor();
+
+    }
+
 }
