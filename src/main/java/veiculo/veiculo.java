@@ -1,6 +1,7 @@
 package veiculo;
 
 import estruturas.No;
+import estruturas.lista.Lista;
 
 public class veiculo {
 
