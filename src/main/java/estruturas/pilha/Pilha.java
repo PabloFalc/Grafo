@@ -26,22 +26,24 @@ public class Pilha<Tipo> {
         return true;
     }
 
-    public boolean remover(){
+    public Tipo remover(){
         No<Tipo> no = this.head;
         if(isEmpty()){
-            return false;
+            return null;
         }
         else if(size()== 1){
+            Tipo valor = this.head.getValor();
             this.head = null;
             this.tamanho--;
-            return true;
+            return valor;
         }
 
+        Tipo valor = this.head.getValor();
         this.head = head.getAnt();
         this.head.setProx(null);
         no.setAnt(null);
         this.tamanho--;
-        return true;
+        return valor;
 
     }
 

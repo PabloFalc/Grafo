@@ -18,8 +18,8 @@ public class Aresta {
     */
 
     private String id;
-    private Cruzamento source;
-    private Cruzamento target;
+    private Vertice source;
+    private Vertice target;
     private int length;
     private double travel_time;
     private boolean oneway;
