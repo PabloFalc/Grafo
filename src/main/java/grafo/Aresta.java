@@ -18,16 +18,12 @@ public class Aresta {
     */
 
     private String id;
-    private Vertice source;
-    private Vertice target;
-    private int length;
+    private Vertice origem;
+    private Vertice destino;
+    private int tamanho;
     private double travel_time;
     private boolean oneway;
     private int maxspeed;
-
-
-
-
 
 
 }

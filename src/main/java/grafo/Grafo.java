@@ -19,12 +19,11 @@ public class Grafo {
         this.vertices.add(novoVertice);
     }
     public void addAresta(Aresta novaAresta) {
-        Vertice inicio = this.getVertice(novaAresta.getSource());
-        Vertice fim = this.getVertice(novaAresta.getTarget());
+        Vertice inicio = this.getVertice(novaAresta.getDestino());
+        Vertice fim = this.getVertice(novaAresta.getOrigem());
         this.arestas.add(novaAresta);
         inicio.addArestaDeSaida(novaAresta);
         fim.addArestaDeEntrada(novaAresta);
-        System.out.println("Adicionando aresta de " + inicio.getId() + " para " + fim.getId() + " com peso " + novaAresta.getLength());
     }
 
     public Vertice getVertice(Vertice vertice){
@@ -38,7 +37,5 @@ public class Grafo {
         return atual;
     }
 
-    public Aresta[] obterArestasDe(Vertice vertice){
 
-    }
 }
