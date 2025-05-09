@@ -17,7 +17,6 @@ public class Vertice {
     private double latitude;
     private double longitude;
     private Lista<Aresta> arestasDeEntrada;
-
     private Lista<Aresta> arestasDeSaida;
 
     public Vertice(double longitude, double latitude, String id) {
@@ -26,6 +25,9 @@ public class Vertice {
         this.longitude = longitude;
         this.latitude = latitude;
         this.id = id;
+    }
+    public Vertice(){
+
     }
 
     public boolean addArestaDeEntrada(Aresta aresta){
