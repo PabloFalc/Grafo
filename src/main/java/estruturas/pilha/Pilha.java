@@ -1,7 +1,9 @@
 package estruturas.pilha;
 
 import estruturas.No;
+import lombok.Getter;
 
+@Getter
 public class Pilha<Tipo> {
     No<Tipo> head;
     private int tamanho;
@@ -32,18 +34,15 @@ public class Pilha<Tipo> {
             return null;
         }
         else if(size()== 1){
-            Tipo valor = this.head.getValor();
             this.head = null;
             this.tamanho--;
-            return valor;
+            return no.getValor();
         }
-
-        Tipo valor = this.head.getValor();
         this.head = head.getAnt();
         this.head.setProx(null);
         no.setAnt(null);
         this.tamanho--;
-        return valor;
+        return no.getValor();
 
     }
 

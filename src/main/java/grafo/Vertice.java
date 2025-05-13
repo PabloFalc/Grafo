@@ -1,5 +1,6 @@
 package grafo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import estruturas.lista.Lista;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,32 +8,35 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Vertice {
-    /*
-"id": "7170812871",
-"latitude": -5.1500259,
-"longitude": -42.7885974
-    */
 
+    @JsonProperty("id")
     private String id;
+    @JsonProperty("latitude")
     private double latitude;
+    @JsonProperty("longitude")
     private double longitude;
     private Lista<Aresta> arestasDeEntrada;
-
     private Lista<Aresta> arestasDeSaida;
 
     public Vertice(double longitude, double latitude, String id) {
-        this.arestasDeEntrada = new Lista<Aresta>();
-        this.arestasDeSaida = new Lista<Aresta>();
+        this.arestasDeEntrada = new Lista<>();
+        this.arestasDeSaida = new Lista<>();
         this.longitude = longitude;
         this.latitude = latitude;
         this.id = id;
     }
 
-    public boolean addArestaDeEntrada(Aresta aresta){
-        return this.arestasDeEntrada.add(aresta);
+    public Vertice(){
+        this.arestasDeEntrada = new Lista<>();
+        this.arestasDeSaida = new Lista<>();
     }
-    public boolean addArestaDeSaida(Aresta aresta){
-        return this.arestasDeSaida.add(aresta);
+
+
+    public void addArestaDeEntrada(Aresta aresta){
+        arestasDeEntrada.add(aresta);
+    }
+    public void addArestaDeSaida(Aresta aresta){
+        arestasDeSaida.add(aresta);
     }
 
     public Lista<Aresta> ArestasTotais() {

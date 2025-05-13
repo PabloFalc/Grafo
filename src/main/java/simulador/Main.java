@@ -1,7 +1,13 @@
 package simulador;
 
+import estruturas.lista.Lista;
+import gerador.GeradorMapa;
+import grafo.Aresta;
+import grafo.Grafo;
+
 import grafo.Aresta;
 import grafo.Vertice;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -18,19 +24,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Main extends Application {
+    public static void main(String[] args) {
+        GeradorMapa gerador = new GeradorMapa();
+        launch(args);
 
-    Vertice v1 = new Vertice(100, 100, "A");
-    Vertice v2 = new Vertice(200, 150, "B");
-    Vertice v3 = new Vertice(350, 125, "C");
-    Vertice v4 = new Vertice(400, 50, "D");
+        Grafo grafo = gerador.gerar("a");
+        Lista<Aresta> arestaLista = grafo.getArestas();
+        System.out.println(arestaLista.tamanho);
 
-    Aresta a1 = new Aresta(v1, v2, 5, 0.1, false, 50);
-    Aresta a2 = new Aresta(v2, v3, 10, 0.2, true, 60);
-    Aresta a3 = new Aresta(v3, v4, 15, 0.3, false, 70);
-    Aresta a4 = new Aresta(v4, v1, 20, 0.4, true, 80);
-    Aresta a5 = new Aresta(v1, v3, 25, 0.5, false, 90);
-    Aresta a6 = new Aresta(v2, v4, 30, 0.6, true, 100);
+         Vertice v1 = new Vertice(100, 100, "A");
+          Vertice v2 = new Vertice(200, 150, "B");
+          Vertice v3 = new Vertice(350, 125, "C");
+          Vertice v4 = new Vertice(400, 50, "D");
 
+          Aresta a1 = new Aresta(v1, v2, 5, 0.1, false, 50);
+          Aresta a2 = new Aresta(v2, v3, 10, 0.2, true, 60);
+          Aresta a3 = new Aresta(v3, v4, 15, 0.3, false, 70);
+          Aresta a4 = new Aresta(v4, v1, 20, 0.4, true, 80);
+          Aresta a5 = new Aresta(v1, v3, 25, 0.5, false, 90);
+          Aresta a6 = new Aresta(v2, v4, 30, 0.6, true, 100);
+
+
+
+
+    }
+  
     @Override
     public void start(Stage stage) {
         Pane pane = new Pane();
@@ -65,7 +83,4 @@ public class Main extends Application {
         stage.show();
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
 }
