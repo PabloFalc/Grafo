@@ -50,14 +50,17 @@ public class Lista<Tipo>{
     public boolean add(Tipo valor){
         No<Tipo> novo = new No<>(valor);
 
-        if(this.head == null){
+        if(this.head == null || this.tamanho <= 0){
             this.head = novo;
-            return  true;
+            this.tail = novo;
+            tamanho++;
+            return true;
         }
 
         novo.setProx(this.head);
         this.head.setAnt(novo);
         this.head = novo;
+        tamanho++;
         return true;
     }
 
@@ -80,7 +83,29 @@ public class Lista<Tipo>{
 
     }
 
-    public No<Tipo> remover(int pos) {
+    public Tipo remover(){
+
+        if(this.head == null || this.tamanho <= 0){
+            return null;
+        }
+        if(this.head == this.tail){
+            No<Tipo> atual = this.head;
+            this.head = null;
+            this.tamanho--;
+
+            return atual.getValor();
+        }
+
+
+        No<Tipo> atual = this.tail;
+        this.tail.getAnt().setProx(null);
+        this.tail.setAnt(atual.getAnt());
+        atual.setAnt(null);
+        tamanho--;
+        return atual.getValor();
+    }
+
+    public No<Tipo> removerPorPosicao(int pos) {
         if (pos < 0 || pos >= tamanho) {
             return null;
         }
