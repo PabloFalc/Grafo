@@ -1,6 +1,9 @@
 package simulador;
 
-import grafo.gerador.GeradorMapa;
+import estruturas.lista.Lista;
+import gerador.GeradorMapa;
+import grafo.Aresta;
+import grafo.Grafo;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -10,7 +13,13 @@ import javafx.stage.Stage;
 public class Main extends Application {
     public static void main(String[] args) {
         GeradorMapa gerador = new GeradorMapa();
-        gerador.gerar();
+
+        Grafo grafo = gerador.gerar("a");
+        Lista<Aresta> arestaLista = grafo.getArestas();
+        System.out.println(arestaLista.tamanho);
+
+
+
 
 
 
