@@ -54,6 +54,7 @@ public class Grafo {
         }
         return atual;
     }
-
-
+    public Lista<Aresta> obterArestasDe(Vertice vertice){
+        return vertice.getArestasDeSaida();
+    }
 }
