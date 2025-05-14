@@ -4,54 +4,51 @@ import estruturas.No;
 
 public class Fila<Tipo> {
 
-    public No<Tipo> head;
-    public No<Tipo> tail;
+    private No<Tipo> head;
+    private No<Tipo> tail;
 
-    public Fila(){
+    public Fila() {
         this.head = null;
         this.tail = null;
     }
 
+    public boolean add(Tipo elemento) {
+        No<Tipo> no = new No<>(elemento);
 
-
-    public boolean add(Tipo elemento){
-        if(this.head == null){
-           No<Tipo> no = new No<>(elemento);
-
-            this.tail = no;
+        if (this.head == null) {
             this.head = no;
-            return true;
+            this.tail = no;
+        } else {
+            no.setProx(this.head);
+            this.head = no;
         }
-       No<Tipo> no = new No<Tipo>(elemento);
-
-        no.setProx(this.head);
-        this.head = no;
         return true;
-
     }
-    public boolean remover(){
 
-        if(this.head == null){
-            return  false;
+    public Tipo remover() {
+        if (this.head == null) {
+            return null;
         }
-        if(this.head == this.tail){
-           No<Tipo> elemento = this.head;
 
+        if (this.head == this.tail) {
+            Tipo elemento = this.head.getValor();
             this.head = null;
-            this.tail =null;
-            return true;
+            this.tail = null;
+            return elemento;
         }
-       No<Tipo> elemento = this.tail;
-       No<Tipo> atual = this.head;
 
-        while (atual.getProx() != elemento){
+        No<Tipo> atual = this.head;
+        while (atual.getProx() != this.tail) {
             atual = atual.getProx();
         }
 
+        Tipo elemento = this.tail.getValor();
         atual.setProx(null);
         this.tail = atual;
-
-        return true;
+        return elemento;
     }
 
+    public boolean isEmpty() {
+        return this.head == null;
+    }
 }

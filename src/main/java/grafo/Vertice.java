@@ -17,6 +17,13 @@ public class Vertice {
     private double longitude;
     private Lista<Aresta> arestasDeEntrada;
     private Lista<Aresta> arestasDeSaida;
+    private double distancia = Double.POSITIVE_INFINITY;
+    private Vertice anterior;
+
+    public void resetarDijkstra() {
+        distancia = Double.POSITIVE_INFINITY;
+        anterior = null;
+    }
 
     public Vertice(double longitude, double latitude, String id) {
         this.arestasDeEntrada = new Lista<>();

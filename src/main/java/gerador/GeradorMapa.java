@@ -19,13 +19,12 @@ public class GeradorMapa<Tipo> {
      * @return Um objeto {Grafo} representando o grafo, ou {null} em caso de erro.
      */
     public Grafo gerar(String path){
-        File file = new File("C:/Users/pablo/Documents/Grafo/Grafo/json/j.json");
         File json = new File(path);
 
         try {
             // Mapeia o json é envia ele para clase conteiner para deserializar o json
             ObjectMapper mapper = new ObjectMapper();
-            JsonConteiner estruturas = mapper.readValue(file, JsonConteiner.class);
+            JsonConteiner estruturas = mapper.readValue(json, JsonConteiner.class);
 
             Pilha<ArestaBruta> arestas = gerarPilha(estruturas.arestas);
             Pilha<Vertice> vertices = gerarPilha(estruturas.vertices);
@@ -61,7 +60,6 @@ public class GeradorMapa<Tipo> {
      */
     private Grafo gerarGrafo(Pilha<ArestaBruta> arestas, Pilha<Vertice> vertices, Pilha<Semaforo> semaforos) {
         Grafo grafo = new Grafo();
-        System.out.println(arestas.getTamanho());
 
         while (vertices.getTamanho() != 0){
             grafo.addVertice(vertices.remover());
@@ -70,11 +68,8 @@ public class GeradorMapa<Tipo> {
 
         while(arestas.getTamanho() != 0 ){
             grafo.addArestaBruta(arestas.remover());
-            System.out.println(arestas.getTamanho());
         }
-        System.out.println(arestas.getTamanho());
 
-        System.out.println(grafo.getVertices().tamanho);
         return grafo;
     }
 

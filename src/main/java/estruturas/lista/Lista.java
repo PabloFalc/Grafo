@@ -64,25 +64,6 @@ public class Lista<Tipo>{
         return true;
     }
 
-    public void imprimir() {
-        No<Tipo> atual = this.head;
-        No<Tipo> atual2 = this.tail;
-        System.out.print("head -> ");
-
-        while (atual != null) {
-            System.out.print(atual.getValor() + " -> ");
-            atual = atual.getProx();
-        }
-        System.out.println("null");
-        System.out.print("tail -> ");
-        for (int i = tamanho - 1; i >= 0; i--) {
-            System.out.print(atual2.getValor() + " -> ");
-            atual2 = atual2.getAnt();
-        }
-        System.out.println("null");
-
-    }
-
     public Tipo remover(){
 
         if(this.head == null || this.tamanho <= 0){
