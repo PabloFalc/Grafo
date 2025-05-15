@@ -42,7 +42,7 @@ public class Main extends Application {
     public void start(Stage stage) {
         // Gerar grafo
         GeradorMapa<Grafo> gerador = new GeradorMapa<>();
-        Grafo grafo = gerador.gerar("json/j.json");
+        Grafo grafo = gerador.gerar("json/mapa.json");
         System.out.println(grafo.getVertices().getTamanho());
         System.out.println(grafo.getArestas().getTamanho());
 
