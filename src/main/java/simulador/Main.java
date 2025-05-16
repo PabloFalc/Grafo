@@ -116,7 +116,7 @@ public class Main extends Application {
             int tempoAmarelo = 2;
             int tempoVermelho = 4 + new Random().nextInt(3);
 
-            SimuladorSemaforo controlador = new SimuladorSemaforo(semaforoView, tempoVerde, tempoAmarelo, tempoVermelho);
+            SimuladorSemaforo controlador = new SimuladorSemaforo(semaforoView,Heuristica.PADRAO);
             semaforos.put(vertice.getId(), controlador);
         }
 
@@ -137,7 +137,7 @@ public class Main extends Application {
         Vertice origem = grafo.getVertices().get(0);
 
         //veiculo
-        int quantidadeVeiculos = 10;
+        int quantidadeVeiculos = 100;
         Lista<veiculo> veiculos = new Lista<>();
         Lista<Circle> icones = new Lista<>();
         for (int i = 0; i < quantidadeVeiculos; i++) {

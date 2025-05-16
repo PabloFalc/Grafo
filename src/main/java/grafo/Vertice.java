@@ -1,5 +1,6 @@
 package grafo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import estruturas.lista.Lista;
 import lombok.Getter;
@@ -17,6 +18,8 @@ public class Vertice {
     private double longitude;
     private Lista<Aresta> arestasDeEntrada;
     private Lista<Aresta> arestasDeSaida;
+    @JsonIgnore
+    private Semaforo semaforo;
     private double distancia = Double.POSITIVE_INFINITY;
     private Vertice anterior;
 

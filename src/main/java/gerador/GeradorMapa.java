@@ -28,10 +28,10 @@ public class GeradorMapa<Tipo> {
 
             Pilha<ArestaBruta> arestas = gerarPilha(estruturas.arestas);
             Pilha<Vertice> vertices = gerarPilha(estruturas.vertices);
-            Pilha<Semaforo> semaforos = gerarPilha(estruturas.semaforos);
 
 
-            return gerarGrafo(arestas, vertices, semaforos);
+
+            return gerarGrafo(arestas, vertices, estruturas.semaforos);
 
 
         }
@@ -58,10 +58,24 @@ public class GeradorMapa<Tipo> {
      * @param semaforos Uma lista de semáforos (Semaforo) associados ao grafo (não utilizados neste método).
      * @return Uma nova instância de Grafo contendo os vértices e arestas brutas fornecidos.
      */
-    private Grafo gerarGrafo(Pilha<ArestaBruta> arestas, Pilha<Vertice> vertices, Pilha<Semaforo> semaforos) {
+    private Grafo gerarGrafo(Pilha<ArestaBruta> arestas, Pilha<Vertice> vertices, Semaforo[] semaforos) {
         Grafo grafo = new Grafo();
 
         while (vertices.getTamanho() != 0){
+            for(int i = 0; i < semaforos.length; i++){
+                if(semaforos[i].getLongitude() == vertices.peek().getLongitude() && semaforos[i].getLatitude() == vertices.peek().getLatitude()){
+                    vertices.peek().setSemaforo(semaforos[i]);
+                    System.out.println("--------------------------");
+                    System.out.println("Vertice: " + vertices.peek().getId());
+                    System.out.println("Semaforo: " + semaforos[i].getId());
+                    System.out.println(semaforos[i].getLongitude());
+                    System.out.println(vertices.peek().getLongitude());
+                    System.out.println(vertices.peek().getLatitude());
+                    System.out.println(semaforos[i].getLatitude());
+                    break;
+                }
+            }
+
             grafo.addVertice(vertices.remover());
         }
 

@@ -9,13 +9,13 @@ import lombok.Setter;
 public class Semaforo {
 
     private String id;
-    private String latitude;
-    private String longitude;
+    private double latitude;
+    private double longitude;
     private String direcao;
     public Semaforo() {
     }
 
-    public Semaforo(String id, String direcao, String longitude, String latitude) {
+    public Semaforo(String id, String direcao, double longitude, double latitude) {
         this.id = id;
         this.direcao = direcao;
         this.longitude = longitude;
