@@ -15,6 +15,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
@@ -137,19 +138,16 @@ public class Simulador extends Application {
         //veiculo
         int quantidadeVeiculos = 5;
         Lista<Veiculo> veiculos = new Lista<>();
-        Lista<Circle> icones = new Lista<>();
+        Lista<Rectangle> icones = new Lista<>();
         for (int i = 0; i < quantidadeVeiculos; i++) {
             Veiculo v = GeradorDeVeiculos.gerar(i + 1, grafo);
-            Circle icone = new Circle(v.getVerticeAtual().getLongitude(), v.getVerticeAtual().getLatitude(), 4, Color.BLUE);
             veiculos.add(v);
-            icones.add(icone);
-            pane.getChildren().add(icone);
+            icones.add(v.getRectangle());
+            pane.getChildren().add(v.getRectangle());
         }
 
-        Circle carro = new Circle(origem.getLongitude(), origem.getLatitude(), 1, Color.BLUE);
-        pane.getChildren().add(carro);
 
-        final Timeline timeline = getTimeline(semaforos, veiculos, icones);
+        final Timeline timeline = getTimeline(semaforos, veiculos , pane);
         timeline.play();
 
         // 6. Exibir a cena
@@ -159,72 +157,61 @@ public class Simulador extends Application {
         stage.show();
     }
 
-    private static Timeline getTimeline(Map<String, SimuladorSemaforo> semaforos, Lista<Veiculo> veiculos, Lista<Circle> icones) {
+    private static Timeline getTimeline(Map<String, SimuladorSemaforo> semaforos, Lista<Veiculo> veiculos, Pane pane) {
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            // Atualiza semáforos
+            // Atualiza os semáforos
             for (SimuladorSemaforo controlador : semaforos.values()) {
                 controlador.tick();
             }
 
-            // Move veículos
-            if(veiculos.getTamanho() != 0){
-                System.out.println(veiculos.getTamanho());
-                for (int i = 0; i < veiculos.getTamanho(); i++) {
-                    Veiculo v = veiculos.get(i);
+            // Atualiza os veículos
+            for (int i = 0; i < veiculos.getTamanho(); i++) {
+                Veiculo v = veiculos.get(i);
 
-                    if(v.isChegouAoDestino()){
-                        veiculos.removerPorPosicao(i);
-                        v = null;
-                        System.out.println("removi");
+                if (v.isChegouAoDestino()) {
+                    System.out.println("Veículo chegou ao destino e será removido.");
+                    veiculos.removerPorPosicao(i);
+                    pane.getChildren().remove(v.getRectangle());
+                    i--;
+                    continue;
+                }
 
-                        continue;
+                Vertice proximo = v.getProximoVertice();
+                Aresta proxima = v.getProximoAresta();
+
+                if (proximo != null) {
+                    SimuladorSemaforo semaforo = semaforos.get(proximo.getId());
+                    if (semaforo != null && !semaforo.podePassar()) {
+                        continue; // Semáforo fechado
                     }
+                }
 
-                    System.out.println("---------");
-                    System.out.println("id verice atual: "+v.getVerticeAtual().getId());
-                    System.out.println("caminho vertice id: " + v.getCaminho().getTail().getValor().getId());
-                    System.out.println("tamanho caminho: "+v.getCaminho().getTamanho());
-                    System.out.println("pos atual: "+v.getPosicaoAtual());
-
-
-                    Vertice proximo = v.getProximoVertice();
-                    Aresta proxima = v.getProximoAresta();
-                    Aresta arestaAtual = v.getArestaAtual();
-
-
-
-                    if (proximo != null) {
-                        SimuladorSemaforo semaforo = semaforos.get(proximo.getId());
-                        if (semaforo != null && !semaforo.podePassar()) {
-                            continue; // semáforo fechado, não move
-                        }
-                    }
-
-                    if(v.isInicio()){
-                        System.out.println("no inicio");
-                        v.setArestaAtual(proxima);
+                if (v.isInicio()) {
+                    v.setArestaAtual(proxima);
+                    if (proxima != null) {
                         proxima.addVeiculo(v);
                     }
-
-                    if(arestaAtual != null){
-                        System.out.println("cai aqui");
-                        if(proxima.isFull()){
-                            System.out.println("continue");
-                            continue;
-                        }
-                        proxima.addVeiculo(arestaAtual.removeVeiculo(v));
+                } else {
+                    Aresta atual = v.getArestaAtual();
+                    if (proxima != null && proxima.isFull()) {
+                        continue; // Aresta futura cheia
                     }
 
+                    if (atual != null) {
+                        atual.removeVeiculo(v);
+                    }
 
-                    v.mover();
-                    Vertice atual = v.getVerticeAtual();
-                    Circle icone = icones.get(i);
-                    icone.setCenterX(atual.getLongitude());
-                    icone.setCenterY(atual.getLatitude());
-
+                    if (proxima != null) {
+                        proxima.addVeiculo(v);
+                        v.setArestaAtual(proxima);
+                    }
                 }
+
+                v.mover();
+
             }
         }));
+
         timeline.setCycleCount(Timeline.INDEFINITE);
         return timeline;
     }

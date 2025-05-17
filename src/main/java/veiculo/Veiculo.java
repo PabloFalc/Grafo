@@ -1,14 +1,19 @@
 package veiculo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import estruturas.lista.Lista;
 import grafo.Aresta;
 import grafo.Vertice;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class Veiculo {
+    @JsonIgnore
+    private Rectangle rectangle;
     private int id;
     private Vertice origem, destino;
     private int tempoEspera;
@@ -26,6 +31,13 @@ public class Veiculo {
         this.posicaoAtual = 0;
         this.chegouAoDestino = false;
         this.arestaAtual = null;
+
+        double tamanho = 8;
+        double x = origem.getLongitude() - tamanho / 2;
+        double y = origem.getLatitude() - tamanho / 2;
+        this.rectangle = new Rectangle(x, y, tamanho, tamanho);
+        this.rectangle.setFill(Color.BLUE);
+        this.rectangle.setStroke(Color.BLACK);
     }
 
     public Vertice getVerticeAtual() {
@@ -44,7 +56,8 @@ public class Veiculo {
 
         if (posicaoAtual + 1 < caminho.getTamanho()) {
             posicaoAtual++;
-            if(posicaoAtual == caminho.getTamanho()) {
+            atualizarPosicaoGrafica();
+            if(posicaoAtual +1 == caminho.getTamanho()) {
                 setChegouAoDestino(true);
             }
         }
@@ -69,5 +82,12 @@ public class Veiculo {
 
     public boolean isInicio() {
         return  this.posicaoAtual == 0;
+    }
+
+    private void atualizarPosicaoGrafica() {
+        double tamanho = rectangle.getWidth();
+        Vertice atual = getVerticeAtual();
+        rectangle.setX(atual.getLongitude() - tamanho / 2);
+        rectangle.setY(atual.getLatitude() - tamanho / 2);
     }
 }
