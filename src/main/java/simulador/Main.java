@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
-import veiculo.veiculo;
+import veiculo.Veiculo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -108,16 +108,13 @@ public class Main extends Application {
         for (int i = 0; i < grafo.getVertices().getTamanho(); i++) {
             Vertice vertice = grafo.getVertices().get(i);
 
-            Circle semaforoView = new Circle(vertice.getLongitude(), vertice.getLatitude(), 5, Color.GREEN);
-            pane.getChildren().add(semaforoView);
+            if(vertice.hasSemaforo()){
+                Circle semaforoView = new Circle(vertice.getLongitude(), vertice.getLatitude(), 5, Color.GREEN);
+                pane.getChildren().add(semaforoView);
 
-            // tempos aleatórios entre 3–5 segundos para cada fase
-            int tempoVerde = 3 + new Random().nextInt(3);
-            int tempoAmarelo = 2;
-            int tempoVermelho = 4 + new Random().nextInt(3);
-
-            SimuladorSemaforo controlador = new SimuladorSemaforo(semaforoView,Heuristica.PADRAO);
-            semaforos.put(vertice.getId(), controlador);
+                SimuladorSemaforo controlador = new SimuladorSemaforo(semaforoView,Heuristica.PADRAO);
+                semaforos.put(vertice.getId(), controlador);
+            }
         }
 
 
@@ -138,10 +135,10 @@ public class Main extends Application {
 
         //veiculo
         int quantidadeVeiculos = 100;
-        Lista<veiculo> veiculos = new Lista<>();
+        Lista<Veiculo> veiculos = new Lista<>();
         Lista<Circle> icones = new Lista<>();
         for (int i = 0; i < quantidadeVeiculos; i++) {
-            veiculo v = GeradorDeVeiculos.gerar(i + 1, grafo);
+            Veiculo v = GeradorDeVeiculos.gerar(i + 1, grafo);
             Circle icone = new Circle(v.getVerticeAtual().getLongitude(), v.getVerticeAtual().getLatitude(), 4, Color.BLUE);
             veiculos.add(v);
             icones.add(icone);
@@ -159,7 +156,7 @@ public class Main extends Application {
 
             // Move veículos
             for (int i = 0; i < veiculos.getTamanho(); i++) {
-                veiculo v = veiculos.get(i);
+                Veiculo v = veiculos.get(i);
 
                 if (!v.isChegouAoDestino()) {
                     Vertice proximo = v.getProximoVertice();

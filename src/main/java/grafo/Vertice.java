@@ -63,6 +63,9 @@ public class Vertice {
         return todas;
     }
 
+    public boolean hasSemaforo(){
+        return semaforo != null;
+    }
 
 
 
