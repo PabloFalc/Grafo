@@ -1,6 +1,7 @@
 package veiculo;
 
 import estruturas.lista.Lista;
+import grafo.Aresta;
 import grafo.Vertice;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +15,7 @@ public class Veiculo {
     private Lista<Vertice> caminho;
     private int posicaoAtual; // índice do caminho atual
     private boolean chegouAoDestino;
+    private Aresta arestaAtual;
 
     public Veiculo(int id, Vertice origem, Vertice destino, Lista<Vertice> caminho) {
         this.id = id;
@@ -23,6 +25,7 @@ public class Veiculo {
         this.tempoEspera = 0;
         this.posicaoAtual = 0;
         this.chegouAoDestino = false;
+        this.arestaAtual = null;
     }
 
     public Vertice getVerticeAtual() {
@@ -37,12 +40,34 @@ public class Veiculo {
     }
 
     public void mover() {
-        if (chegouAoDestino) return;
+        if (isChegouAoDestino()) return;
 
         if (posicaoAtual + 1 < caminho.getTamanho()) {
             posicaoAtual++;
-        } else {
-            chegouAoDestino = true;
+            if(posicaoAtual == caminho.getTamanho()) {
+                setChegouAoDestino(true);
+            }
         }
+    }
+
+    public Aresta getProximoAresta() {
+
+        Vertice verticeAtual = getVerticeAtual();
+        Vertice proximoVertice = getProximoVertice();
+        if(isChegouAoDestino()){
+            return null;
+        }
+
+        for (int i = 0; i < verticeAtual.getArestasDeEntrada().tamanho; i++) {
+            Aresta aresta = verticeAtual.getArestasDeEntrada().get(i);
+            if(aresta.getOrigem().getId().equals(proximoVertice.getId())){
+                return aresta;
+            }
+        }
+        return null;
+    }
+
+    public boolean isInicio() {
+        return  this.posicaoAtual == 0;
     }
 }

@@ -1,7 +1,9 @@
 package simulador;
 
+import enums.Heuristica;
 import estruturas.fila.Fila;
 import estruturas.lista.Lista;
+import gerador.GeradorDeVeiculos;
 import gerador.GeradorMapa;
 import grafo.Aresta;
 import grafo.Grafo;
@@ -22,10 +24,9 @@ import veiculo.Veiculo;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 
-public class Main extends Application {
+public class Simulador extends Application {
 
     public static Lista<Vertice> filaParaLista(Fila<Vertice> fila) {
         Lista<Vertice> lista = new Lista<>();
@@ -112,7 +113,7 @@ public class Main extends Application {
                 Circle semaforoView = new Circle(vertice.getLongitude(), vertice.getLatitude(), 5, Color.GREEN);
                 pane.getChildren().add(semaforoView);
 
-                SimuladorSemaforo controlador = new SimuladorSemaforo(semaforoView,Heuristica.PADRAO);
+                SimuladorSemaforo controlador = new SimuladorSemaforo(semaforoView, Heuristica.PADRAO);
                 semaforos.put(vertice.getId(), controlador);
             }
         }
@@ -134,7 +135,7 @@ public class Main extends Application {
         Vertice origem = grafo.getVertices().get(0);
 
         //veiculo
-        int quantidadeVeiculos = 100;
+        int quantidadeVeiculos = 5;
         Lista<Veiculo> veiculos = new Lista<>();
         Lista<Circle> icones = new Lista<>();
         for (int i = 0; i < quantidadeVeiculos; i++) {
@@ -148,34 +149,7 @@ public class Main extends Application {
         Circle carro = new Circle(origem.getLongitude(), origem.getLatitude(), 1, Color.BLUE);
         pane.getChildren().add(carro);
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            // Atualiza semáforos
-            for (SimuladorSemaforo controlador : semaforos.values()) {
-                controlador.tick();
-            }
-
-            // Move veículos
-            for (int i = 0; i < veiculos.getTamanho(); i++) {
-                Veiculo v = veiculos.get(i);
-
-                if (!v.isChegouAoDestino()) {
-                    Vertice proximo = v.getProximoVertice();
-                    if (proximo != null) {
-                        SimuladorSemaforo semaforo = semaforos.get(proximo.getId());
-                        if (semaforo != null && !semaforo.podePassar()) {
-                            continue; // semáforo fechado, não move
-                        }
-                    }
-
-                    v.mover();
-                    Vertice atual = v.getVerticeAtual();
-                    Circle icone = icones.get(i);
-                    icone.setCenterX(atual.getLongitude());
-                    icone.setCenterY(atual.getLatitude());
-                }
-            }
-        }));
-        timeline.setCycleCount(Timeline.INDEFINITE);
+        final Timeline timeline = getTimeline(semaforos, veiculos, icones);
         timeline.play();
 
         // 6. Exibir a cena
@@ -183,5 +157,75 @@ public class Main extends Application {
         stage.setTitle("Simulador com Coordenadas Normalizadas");
         stage.setScene(scene);
         stage.show();
+    }
+
+    private static Timeline getTimeline(Map<String, SimuladorSemaforo> semaforos, Lista<Veiculo> veiculos, Lista<Circle> icones) {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            // Atualiza semáforos
+            for (SimuladorSemaforo controlador : semaforos.values()) {
+                controlador.tick();
+            }
+
+            // Move veículos
+            if(veiculos.getTamanho() != 0){
+                System.out.println(veiculos.getTamanho());
+                for (int i = 0; i < veiculos.getTamanho(); i++) {
+                    Veiculo v = veiculos.get(i);
+
+                    if(v.isChegouAoDestino()){
+                        veiculos.removerPorPosicao(i);
+                        v = null;
+                        System.out.println("removi");
+
+                        continue;
+                    }
+
+                    System.out.println("---------");
+                    System.out.println("id verice atual: "+v.getVerticeAtual().getId());
+                    System.out.println("caminho vertice id: " + v.getCaminho().getTail().getValor().getId());
+                    System.out.println("tamanho caminho: "+v.getCaminho().getTamanho());
+                    System.out.println("pos atual: "+v.getPosicaoAtual());
+
+
+                    Vertice proximo = v.getProximoVertice();
+                    Aresta proxima = v.getProximoAresta();
+                    Aresta arestaAtual = v.getArestaAtual();
+
+
+
+                    if (proximo != null) {
+                        SimuladorSemaforo semaforo = semaforos.get(proximo.getId());
+                        if (semaforo != null && !semaforo.podePassar()) {
+                            continue; // semáforo fechado, não move
+                        }
+                    }
+
+                    if(v.isInicio()){
+                        System.out.println("no inicio");
+                        v.setArestaAtual(proxima);
+                        proxima.addVeiculo(v);
+                    }
+
+                    if(arestaAtual != null){
+                        System.out.println("cai aqui");
+                        if(proxima.isFull()){
+                            System.out.println("continue");
+                            continue;
+                        }
+                        proxima.addVeiculo(arestaAtual.removeVeiculo(v));
+                    }
+
+
+                    v.mover();
+                    Vertice atual = v.getVerticeAtual();
+                    Circle icone = icones.get(i);
+                    icone.setCenterX(atual.getLongitude());
+                    icone.setCenterY(atual.getLatitude());
+
+                }
+            }
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        return timeline;
     }
 }

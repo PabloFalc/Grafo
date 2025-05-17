@@ -1,10 +1,11 @@
-package simulador;
+package gerador;
 
 import dijkstra.Dijkstra;
 import estruturas.fila.Fila;
 import estruturas.lista.Lista;
 import grafo.Grafo;
 import grafo.Vertice;
+import simulador.Simulador;
 import veiculo.Veiculo;
 
 import java.util.Random;
@@ -27,7 +28,7 @@ public class GeradorDeVeiculos {
         } while (origem == destino);
 
         Fila<Vertice> caminhoFila = Dijkstra.encontrarMenorCaminho(grafo, origem, destino);
-        Lista<Vertice> caminho = Main.filaParaLista(caminhoFila);
+        Lista<Vertice> caminho = Simulador.filaParaLista(caminhoFila);
 
         return new Veiculo(id, origem, destino, caminho);
     }

@@ -56,7 +56,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>simulador.Main</mainClass>
+                    <mainClass>simulador.Simulador</mainClass>
                 </configuration>
             </plugin>
         </plugins>

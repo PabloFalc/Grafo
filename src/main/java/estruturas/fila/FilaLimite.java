@@ -68,7 +68,7 @@ public class FilaLimite<Tipo> {
     }
 
     public boolean isFull(){
-        return this.head == this.tail;
+        return tamanho == limite;
     }
 
 }

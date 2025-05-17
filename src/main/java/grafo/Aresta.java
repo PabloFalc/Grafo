@@ -30,9 +30,30 @@ public class Aresta {
         this.origem = origem;
     }
 
+    public Aresta(){
+
+    }
+
     public void setFilaLimite(){
         fila = new FilaLimite(this.tamanho/3);
     }
+
+    public boolean hasVeliculos(){
+        return !fila.isEmpty();
+    }
+
+    public boolean isFull(){
+        return fila.isFull();
+    }
+
+    public boolean addVeiculo(Veiculo veiculo){
+        return fila.add(veiculo);
+    }
+
+    public Veiculo removeVeiculo(Veiculo veiculo){
+        return fila.remover();
+    }
+
 
 
 
