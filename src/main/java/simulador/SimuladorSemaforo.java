@@ -5,20 +5,39 @@ import javafx.scene.shape.Circle;
 
 public class SimuladorSemaforo {
     private final Circle view;
-    private final int tempoVerde;
-    private final int tempoAmarelo;
-    private final int tempoVermelho;
+    private int tempoVerde;
+    private int tempoAmarelo;
+    private int tempoVermelho;
 
     private int tempoAtual = 0;
     private String estado = "VERDE"; // inicia no verde
 
-    public SimuladorSemaforo(Circle view, int tempoVerde, int tempoAmarelo, int tempoVermelho) {
+    public SimuladorSemaforo(Circle view, Heuristica heuristica) {
         this.view = view;
-        this.tempoVerde = tempoVerde;
-        this.tempoAmarelo = tempoAmarelo;
-        this.tempoVermelho = tempoVermelho;
+        configHeuristica(heuristica);
         this.view.setFill(Color.GREEN);
     }
+
+    private void configHeuristica(Heuristica heuristica) {
+
+        switch (heuristica) {
+            case PADRAO:
+                this.tempoVerde = 4;
+                this.tempoAmarelo = 2;
+                this.tempoVermelho = 4;
+                break;
+            case ENERGIA:
+                break;
+            case ESPERA:
+                break;
+            default:
+                System.out.println("Erro ao configurar heuristica");
+                break;
+        }
+
+
+    }
+
 
     public void tick() {
         tempoAtual++;

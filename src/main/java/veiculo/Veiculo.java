@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class veiculo {
+public class Veiculo {
     private int id;
     private Vertice origem, destino;
     private int tempoEspera;
@@ -15,7 +15,7 @@ public class veiculo {
     private int posicaoAtual; // índice do caminho atual
     private boolean chegouAoDestino;
 
-    public veiculo(int id, Vertice origem, Vertice destino, Lista<Vertice> caminho) {
+    public Veiculo(int id, Vertice origem, Vertice destino, Lista<Vertice> caminho) {
         this.id = id;
         this.origem = origem;
         this.destino = destino;

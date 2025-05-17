@@ -5,7 +5,7 @@ import estruturas.fila.Fila;
 import estruturas.lista.Lista;
 import grafo.Grafo;
 import grafo.Vertice;
-import veiculo.veiculo;
+import veiculo.Veiculo;
 
 import java.util.Random;
 
@@ -13,7 +13,7 @@ public class GeradorDeVeiculos {
 
     private static final Random random = new Random();
 
-    public static veiculo gerar(int id, Grafo grafo) {
+    public static Veiculo gerar(int id, Grafo grafo) {
         Lista<Vertice> vertices = grafo.getVertices();
         int tamanho = vertices.getTamanho();
 
@@ -29,6 +29,6 @@ public class GeradorDeVeiculos {
         Fila<Vertice> caminhoFila = Dijkstra.encontrarMenorCaminho(grafo, origem, destino);
         Lista<Vertice> caminho = Main.filaParaLista(caminhoFila);
 
-        return new veiculo(id, origem, destino, caminho);
+        return new Veiculo(id, origem, destino, caminho);
     }
 }
