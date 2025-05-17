@@ -145,7 +145,7 @@ public class Main extends Application {
             pane.getChildren().add(icone);
         }
 
-        Circle carro = new Circle(origem.getLongitude(), origem.getLatitude(), 6, Color.BLUE);
+        Circle carro = new Circle(origem.getLongitude(), origem.getLatitude(), 1, Color.BLUE);
         pane.getChildren().add(carro);
 
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
