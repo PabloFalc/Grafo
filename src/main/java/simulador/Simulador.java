@@ -115,7 +115,8 @@ public class Simulador extends Application {
                 Circle semaforoView = new Circle(vertice.getLongitude(), vertice.getLatitude(), 5, Color.GREEN);
                 pane.getChildren().add(semaforoView);
 
-                SimuladorSemaforo controlador = new SimuladorSemaforo(semaforoView, Heuristica.PADRAO);
+                SimuladorSemaforo controlador = new SimuladorSemaforo(semaforoView, Heuristica.ENERGIA);
+                controlador.setArestasControladas(vertice.getArestasDeEntrada());
                 semaforos.put(vertice.getId(), controlador);
             }
         }
