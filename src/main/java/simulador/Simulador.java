@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+import utils.Logs;
 import veiculo.Veiculo;
 
 import java.util.HashMap;
@@ -136,7 +137,7 @@ public class Simulador extends Application {
         Vertice origem = grafo.getVertices().get(0);
 
         //veiculo
-        int quantidadeVeiculos = 5;
+        int quantidadeVeiculos = 1000;
         Lista<Veiculo> veiculos = new Lista<>();
         Lista<Rectangle> icones = new Lista<>();
         for (int i = 0; i < quantidadeVeiculos; i++) {
@@ -159,6 +160,7 @@ public class Simulador extends Application {
 
     private static Timeline getTimeline(Map<String, SimuladorSemaforo> semaforos, Lista<Veiculo> veiculos, Pane pane) {
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+
             // Atualiza os semáforos
             for (SimuladorSemaforo controlador : semaforos.values()) {
                 controlador.tick();

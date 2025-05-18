@@ -8,12 +8,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import lombok.Getter;
 import lombok.Setter;
+import utils.Logs;
 
 @Getter
 @Setter
 public class Veiculo {
     @JsonIgnore
     private Rectangle rectangle;
+    private Logs log;
     private int id;
     private Vertice origem, destino;
     private int tempoEspera;
@@ -22,7 +24,7 @@ public class Veiculo {
     private boolean chegouAoDestino;
     private Aresta arestaAtual;
 
-    public Veiculo(int id, Vertice origem, Vertice destino, Lista<Vertice> caminho) {
+    public Veiculo(int id, Vertice origem, Vertice destino, Lista<Vertice> caminho, Color cor) {
         this.id = id;
         this.origem = origem;
         this.destino = destino;
@@ -31,12 +33,13 @@ public class Veiculo {
         this.posicaoAtual = 0;
         this.chegouAoDestino = false;
         this.arestaAtual = null;
+        this.log = new Logs();
 
         double tamanho = 8;
         double x = origem.getLongitude() - tamanho / 2;
         double y = origem.getLatitude() - tamanho / 2;
         this.rectangle = new Rectangle(x, y, tamanho, tamanho);
-        this.rectangle.setFill(Color.BLUE);
+        this.rectangle.setFill(cor);
         this.rectangle.setStroke(Color.BLACK);
     }
 

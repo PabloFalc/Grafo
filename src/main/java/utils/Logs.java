@@ -2,14 +2,16 @@ package utils;
 
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class Logs {
 
-    private final int veiculoId;
-    private final int tempoEspera;
-    private final int tempoViagem;
-    private final int  tempoAtual;
+    private int veiculoId;
+    private int tempoEspera;
+    private int tempoViagem;
+    private int  tempoAtual;
 
     public Logs(int veiculoId, int tempoAtual, int tempoViagem, int tempoEspera) {
         this.veiculoId = veiculoId;
@@ -17,4 +19,9 @@ public class Logs {
         this.tempoViagem = tempoViagem;
         this.tempoEspera = tempoEspera;
     }
+
+    public Logs() {
+    }
+
+
 }
