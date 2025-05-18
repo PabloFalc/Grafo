@@ -49,8 +49,8 @@ public class Simulador extends Application {
         System.out.println(grafo.getVertices().getTamanho());
         System.out.println(grafo.getArestas().getTamanho());
 
-        double larguraTela = 800;
-        double alturaTela = 600;
+        double larguraTela = 1920;
+        double alturaTela = 1080;
 
         // 1. Encontrar os valores mínimo e máximo
         double minLat = Double.MAX_VALUE;
@@ -99,7 +99,7 @@ public class Simulador extends Application {
             vertice.setLongitude(normX);
             vertice.setLatitude(normY);
 
-            Circle circle = new Circle(normX, normY, 3, Color.ORANGE);
+            Circle circle = new Circle(normX, normY, 3, Color.BLACK);
             Text label = new Text(normX - 5, normY - 10, vertice.getId());
             circle.setStroke(Color.BLACK);
 
@@ -130,15 +130,12 @@ public class Simulador extends Application {
                     aresta.getDestino().getLongitude(), aresta.getDestino().getLatitude()
             );
             line.setStroke(Color.GRAY);
-            line.setStrokeWidth(1);
+            line.setStrokeWidth(3);
             pane.getChildren().add(0, line);
         }
 
-        // 5. Criar caminho com Dijkstra e animar veículo
-        Vertice origem = grafo.getVertices().get(0);
-
         //veiculo
-        int quantidadeVeiculos = 5;
+        int quantidadeVeiculos = 1200;
         Lista<Veiculo> veiculos = new Lista<>();
         Lista<Rectangle> icones = new Lista<>();
         for (int i = 0; i < quantidadeVeiculos; i++) {

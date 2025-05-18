@@ -51,7 +51,10 @@ public class Veiculo {
         if (posicaoAtual + 1 < caminho.getTamanho()) {
             return caminho.get(posicaoAtual + 1);
         }
-        return null;
+
+        else{
+            return getVerticeAtual();
+        }
     }
 
     public void mover() {
@@ -70,7 +73,7 @@ public class Veiculo {
 
         Vertice verticeAtual = getVerticeAtual();
         Vertice proximoVertice = getProximoVertice();
-        if(isChegouAoDestino()){
+        if(isChegouAoDestino() || proximoVertice == null) {
             return null;
         }
 
