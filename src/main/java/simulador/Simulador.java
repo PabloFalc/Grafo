@@ -137,7 +137,7 @@ public class Simulador extends Application {
         Vertice origem = grafo.getVertices().get(0);
 
         //veiculo
-        int quantidadeVeiculos = 1000;
+        int quantidadeVeiculos = 5;
         Lista<Veiculo> veiculos = new Lista<>();
         Lista<Rectangle> icones = new Lista<>();
         for (int i = 0; i < quantidadeVeiculos; i++) {

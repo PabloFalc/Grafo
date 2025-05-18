@@ -1,6 +1,7 @@
 package simulador;
 
 import enums.Heuristica;
+import enums.Led;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -11,12 +12,13 @@ public class SimuladorSemaforo {
     private int tempoVermelho;
 
     private int tempoAtual = 0;
-    private String estado = "VERDE"; // inicia no verde
+    private Led estado;
 
     public SimuladorSemaforo(Circle view, Heuristica heuristica) {
         this.view = view;
-        configHeuristica(heuristica);
+        this.estado = Led.VERDE;
         this.view.setFill(Color.GREEN);
+        configHeuristica(heuristica);
     }
 
     private void configHeuristica(Heuristica heuristica) {
@@ -39,36 +41,52 @@ public class SimuladorSemaforo {
 
     }
 
-
     public void tick() {
         tempoAtual++;
 
         switch (estado) {
-            case "VERDE":
+            case VERDE:
                 if (tempoAtual >= tempoVerde) {
-                    estado = "AMARELO";
+                    switchCor();
                     tempoAtual = 0;
-                    view.setFill(Color.YELLOW);
                 }
                 break;
-            case "AMARELO":
+            case AMARELO:
                 if (tempoAtual >= tempoAmarelo) {
-                    estado = "VERMELHO";
+                    switchCor();
                     tempoAtual = 0;
-                    view.setFill(Color.RED);
                 }
                 break;
-            case "VERMELHO":
+            case VERMELHO:
                 if (tempoAtual >= tempoVermelho) {
-                    estado = "VERDE";
+                    switchCor();
                     tempoAtual = 0;
-                    view.setFill(Color.GREEN);
                 }
                 break;
         }
     }
 
     public boolean podePassar() {
-        return estado.equals("VERDE") || estado.equals("AMARELO");
+        return estado == Led.VERDE || estado == Led.AMARELO;
+    }
+
+    public void switchCor(){
+
+        switch (estado) {
+            case VERDE:
+                estado = Led.AMARELO;
+                view.setFill(Color.YELLOW);
+                break;
+            case AMARELO:
+                estado = Led.VERMELHO;
+                view.setFill(Color.RED);
+                break;
+            case VERMELHO:
+                estado = Led.VERDE;
+                view.setFill(Color.GREEN);
+                break;
+            default:
+                System.out.println("Erro ao switchCor");
+        }
     }
 }
