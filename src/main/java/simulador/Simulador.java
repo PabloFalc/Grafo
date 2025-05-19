@@ -71,8 +71,8 @@ public class Simulador extends Application {
         System.out.println("Longitude: " + minLon + " a " + maxLon);
 
         Pane pane = new Pane();
-        double escala = 40000;
-        double offsetX = 350;
+        double escala = 45000;
+        double offsetX = 550;
         double offsetY = 225;
 
         for (int i = 0; i < grafo.getVertices().getTamanho(); i++) {
@@ -100,10 +100,9 @@ public class Simulador extends Application {
             vertice.setLatitude(normY);
 
             Circle circle = new Circle(normX, normY, 3, Color.BLACK);
-            Text label = new Text(normX - 5, normY - 10, vertice.getId());
             circle.setStroke(Color.BLACK);
 
-            pane.getChildren().addAll(circle, label);
+            pane.getChildren().addAll(circle);
         }
 
         Map<String, SimuladorSemaforo> semaforos = new HashMap<>();
