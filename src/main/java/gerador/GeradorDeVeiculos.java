@@ -15,25 +15,9 @@ public class GeradorDeVeiculos {
 
     private static final Color[] CORES = {
             Color.CYAN,      // 1
-            Color.GREEN,     // 2
-            Color.BLUE,      // 3
-            Color.RED,       // 4
-            Color.YELLOW,    // 5
-            Color.ORANGE,    // 6
-            Color.PURPLE,    // 7
-            Color.BROWN,     // 8
-            Color.PINK,      // 9
-            Color.LIGHTBLUE, // 10
-            Color.LIME,      // 11
-            Color.MAGENTA,   // 12
-            Color.GOLD,      // 13
-            Color.TEAL,      // 14
-            Color.INDIGO,    // 15
-            Color.DARKGRAY,  // 16
-            Color.LIGHTSALMON, // 17
-            Color.DARKOLIVEGREEN, // 18
-            Color.CORAL,     // 19
-            Color.CHOCOLATE  // 20
+            Color.ORANGE,     // 2
+            Color.BISQUE,      // 3
+            Color.BLUE,       // 4
     };
 
     private static final Random random = new Random();
