@@ -2,7 +2,7 @@ package utils;
 
 public class LogSistema {
 
-    public int tempoAtual; // tempo de simulação
+    public int tempoTotal; // tempo de simulação
     public int totalVeiculosCriados;
     public int totalVeiculosFinalizados;
     public int totalVeiculosAtivos;
@@ -10,7 +10,7 @@ public class LogSistema {
     public int ciclosSemaforosExecutados;
 
     public LogSistema(){
-        this.tempoAtual = 0;
+        this.tempoTotal = 0;
         this.totalVeiculosCriados = 0;
         this.totalVeiculosFinalizados = 0;
         this.totalVeiculosAtivos = 0;

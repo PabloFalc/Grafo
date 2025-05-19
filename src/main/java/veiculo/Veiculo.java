@@ -20,9 +20,12 @@ public class Veiculo {
     private Vertice origem, destino;
     private int tempoEspera;
     private Lista<Vertice> caminho;
-    private int posicaoAtual; // índice do caminho atual
+    private int posicaoAtual;
     private boolean chegouAoDestino;
     private Aresta arestaAtual;
+
+    private double progressoNaAresta = 0.0; // de 0.0 até 1.0
+    private double velocidade = 0.05; // ajuste conforme necessário
 
     public Veiculo(int id, Vertice origem, Vertice destino, Lista<Vertice> caminho, Color cor) {
         this.id = id;
@@ -32,7 +35,7 @@ public class Veiculo {
         this.tempoEspera = 0;
         this.posicaoAtual = 0;
         this.chegouAoDestino = false;
-        this.arestaAtual = null;
+        this.progressoNaAresta = 0.0;
         this.log = new Logs();
 
         double tamanho = 8;
@@ -41,6 +44,22 @@ public class Veiculo {
         this.rectangle = new Rectangle(x, y, tamanho, tamanho);
         this.rectangle.setFill(cor);
         this.rectangle.setStroke(Color.BLACK);
+
+        this.arestaAtual = calcularArestaAtual(); // inicializa corretamente
+    }
+
+    private Aresta calcularArestaAtual() {
+        if (posicaoAtual + 1 >= caminho.getTamanho()) return null;
+        Vertice atual = caminho.get(posicaoAtual);
+        Vertice proximo = caminho.get(posicaoAtual + 1);
+
+        for (int i = 0; i < proximo.getArestasDeEntrada().tamanho; i++) {
+            Aresta a = proximo.getArestasDeEntrada().get(i);
+            if (a.getOrigem().getId().equals(atual.getId())) {
+                return a;
+            }
+        }
+        return null;
     }
 
     public Vertice getVerticeAtual() {
@@ -50,50 +69,64 @@ public class Veiculo {
     public Vertice getProximoVertice() {
         if (posicaoAtual + 1 < caminho.getTamanho()) {
             return caminho.get(posicaoAtual + 1);
-        }
-
-        else{
+        } else {
             return getVerticeAtual();
         }
     }
 
     public void mover() {
-        if (isChegouAoDestino()) return;
+        if (chegouAoDestino || arestaAtual == null) return;
 
-        if (posicaoAtual + 1 < caminho.getTamanho()) {
+        progressoNaAresta += velocidade;
+
+        if (progressoNaAresta >= 1.0) {
+            // Aresta foi percorrida
             posicaoAtual++;
-            atualizarPosicaoGrafica();
-            if(posicaoAtual +1 == caminho.getTamanho()) {
-                setChegouAoDestino(true);
+            if (posicaoAtual >= caminho.getTamanho() - 1) {
+                chegouAoDestino = true;
+                atualizarPosicaoGrafica(); // coloca o veículo no destino
+                return;
             }
+
+            progressoNaAresta = 0.0;
+            arestaAtual = calcularArestaAtual();
         }
+
+        atualizarPosicaoGrafica();
     }
 
     public Aresta getProximoAresta() {
-
-        Vertice verticeAtual = getVerticeAtual();
-        Vertice proximoVertice = getProximoVertice();
-        if(isChegouAoDestino() || proximoVertice == null) {
+        if (chegouAoDestino || posicaoAtual + 1 >= caminho.getTamanho()) {
             return null;
         }
 
-        for (int i = 0; i < verticeAtual.getArestasDeEntrada().tamanho; i++) {
-            Aresta aresta = verticeAtual.getArestasDeEntrada().get(i);
-            if(aresta.getOrigem().getId().equals(proximoVertice.getId())){
-                return aresta;
+        Vertice atual = getVerticeAtual();
+        Vertice proximo = getProximoVertice();
+
+        for (int i = 0; i < atual.getArestasDeEntrada().tamanho; i++) {
+            Aresta a = atual.getArestasDeEntrada().get(i);
+            if (a.getOrigem().equals(proximo)) {
+                return a;
             }
         }
         return null;
     }
 
     public boolean isInicio() {
-        return  this.posicaoAtual == 0;
+        return this.posicaoAtual == 0;
     }
 
     private void atualizarPosicaoGrafica() {
+        if (arestaAtual == null) return;
+
+        Vertice origem = arestaAtual.getOrigem();
+        Vertice destino = arestaAtual.getDestino();
+
+        double x = origem.getLongitude() * (1 - progressoNaAresta) + destino.getLongitude() * progressoNaAresta;
+        double y = origem.getLatitude() * (1 - progressoNaAresta) + destino.getLatitude() * progressoNaAresta;
+
         double tamanho = rectangle.getWidth();
-        Vertice atual = getVerticeAtual();
-        rectangle.setX(atual.getLongitude() - tamanho / 2);
-        rectangle.setY(atual.getLatitude() - tamanho / 2);
+        rectangle.setX(x - tamanho / 2);
+        rectangle.setY(y - tamanho / 2);
     }
 }
