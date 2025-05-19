@@ -1,4 +1,4 @@
-package simulador;
+package enums;
 
 public enum Heuristica {
     PADRAO,

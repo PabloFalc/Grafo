@@ -65,13 +65,6 @@ public class GeradorMapa<Tipo> {
             for(int i = 0; i < semaforos.length; i++){
                 if(semaforos[i].getLongitude() == vertices.peek().getLongitude() && semaforos[i].getLatitude() == vertices.peek().getLatitude()){
                     vertices.peek().setSemaforo(semaforos[i]);
-                    System.out.println("--------------------------");
-                    System.out.println("Vertice: " + vertices.peek().getId());
-                    System.out.println("Semaforo: " + semaforos[i].getId());
-                    System.out.println(semaforos[i].getLongitude());
-                    System.out.println(vertices.peek().getLongitude());
-                    System.out.println(vertices.peek().getLatitude());
-                    System.out.println(semaforos[i].getLatitude());
                     break;
                 }
             }

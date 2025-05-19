@@ -35,6 +35,7 @@ public class Grafo {
 
         Aresta aresta = novaAresta.getArestaRefinada();
 
+        aresta.setFilaLimite();
         aresta.setOrigem(inicio);
         aresta.setDestino(fim);
 

@@ -1,19 +1,23 @@
 package grafo;
 
+import estruturas.fila.FilaLimite;
 import lombok.Getter;
 import lombok.Setter;
+import veiculo.Veiculo;
 
 @Getter
 @Setter
 public class Aresta {
 
-    protected String id;
+    private String id;
     private Vertice origem;
     private Vertice destino;
-    protected int tamanho;
-    protected double travel_time;
-    protected boolean oneway;
-    protected int maxspeed;
+    private int tamanho;
+    private double travel_time;
+    private boolean oneway;
+    private int maxspeed;
+    private FilaLimite<Veiculo> fila;
+
 
     public Aresta(String id, int maxspeed, boolean oneway, double travel_time, int tamanho, Vertice destino,
                   Vertice origem) {
@@ -26,8 +30,31 @@ public class Aresta {
         this.origem = origem;
     }
 
-    public Aresta() {
+    public Aresta(){
+
     }
+
+    public void setFilaLimite(){
+        fila = new FilaLimite(this.tamanho/3);
+    }
+
+    public boolean hasVeliculos(){
+        return !fila.isEmpty();
+    }
+
+    public boolean isFull(){
+        return fila.isFull();
+    }
+
+    public boolean addVeiculo(Veiculo veiculo){
+        return fila.add(veiculo);
+    }
+
+    public Veiculo removeVeiculo(Veiculo veiculo){
+        return fila.remover();
+    }
+
+
 
 
 }

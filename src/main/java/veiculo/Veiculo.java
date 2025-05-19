@@ -1,21 +1,30 @@
 package veiculo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import estruturas.lista.Lista;
+import grafo.Aresta;
 import grafo.Vertice;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import lombok.Getter;
 import lombok.Setter;
+import utils.Logs;
 
 @Getter
 @Setter
 public class Veiculo {
+    @JsonIgnore
+    private Rectangle rectangle;
+    private Logs log;
     private int id;
     private Vertice origem, destino;
     private int tempoEspera;
     private Lista<Vertice> caminho;
     private int posicaoAtual; // índice do caminho atual
     private boolean chegouAoDestino;
+    private Aresta arestaAtual;
 
-    public Veiculo(int id, Vertice origem, Vertice destino, Lista<Vertice> caminho) {
+    public Veiculo(int id, Vertice origem, Vertice destino, Lista<Vertice> caminho, Color cor) {
         this.id = id;
         this.origem = origem;
         this.destino = destino;
@@ -23,6 +32,15 @@ public class Veiculo {
         this.tempoEspera = 0;
         this.posicaoAtual = 0;
         this.chegouAoDestino = false;
+        this.arestaAtual = null;
+        this.log = new Logs();
+
+        double tamanho = 8;
+        double x = origem.getLongitude() - tamanho / 2;
+        double y = origem.getLatitude() - tamanho / 2;
+        this.rectangle = new Rectangle(x, y, tamanho, tamanho);
+        this.rectangle.setFill(cor);
+        this.rectangle.setStroke(Color.BLACK);
     }
 
     public Vertice getVerticeAtual() {
@@ -33,16 +51,49 @@ public class Veiculo {
         if (posicaoAtual + 1 < caminho.getTamanho()) {
             return caminho.get(posicaoAtual + 1);
         }
-        return null;
+
+        else{
+            return getVerticeAtual();
+        }
     }
 
     public void mover() {
-        if (chegouAoDestino) return;
+        if (isChegouAoDestino()) return;
 
         if (posicaoAtual + 1 < caminho.getTamanho()) {
             posicaoAtual++;
-        } else {
-            chegouAoDestino = true;
+            atualizarPosicaoGrafica();
+            if(posicaoAtual +1 == caminho.getTamanho()) {
+                setChegouAoDestino(true);
+            }
         }
+    }
+
+    public Aresta getProximoAresta() {
+
+        Vertice verticeAtual = getVerticeAtual();
+        Vertice proximoVertice = getProximoVertice();
+        if(isChegouAoDestino() || proximoVertice == null) {
+            return null;
+        }
+
+        for (int i = 0; i < verticeAtual.getArestasDeEntrada().tamanho; i++) {
+            Aresta aresta = verticeAtual.getArestasDeEntrada().get(i);
+            if(aresta.getOrigem().getId().equals(proximoVertice.getId())){
+                return aresta;
+            }
+        }
+        return null;
+    }
+
+    public boolean isInicio() {
+        return  this.posicaoAtual == 0;
+    }
+
+    private void atualizarPosicaoGrafica() {
+        double tamanho = rectangle.getWidth();
+        Vertice atual = getVerticeAtual();
+        rectangle.setX(atual.getLongitude() - tamanho / 2);
+        rectangle.setY(atual.getLatitude() - tamanho / 2);
     }
 }
