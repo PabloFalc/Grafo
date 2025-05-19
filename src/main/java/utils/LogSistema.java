@@ -17,4 +17,8 @@ public class LogSistema {
         this.totalSemaforos = 0;
         this.ciclosSemaforosExecutados = 0;
     }
+
+    public void createTxt(){
+
+    }
 }

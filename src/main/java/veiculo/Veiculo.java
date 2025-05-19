@@ -25,7 +25,7 @@ public class Veiculo {
     private Aresta arestaAtual;
 
     private double progressoNaAresta = 0.0; // de 0.0 até 1.0
-    private double velocidade = 0.05; // ajuste conforme necessário
+    private double velocidade = 0.10; // ajuste conforme necessário
 
     public Veiculo(int id, Vertice origem, Vertice destino, Lista<Vertice> caminho, Color cor) {
         this.id = id;
@@ -38,7 +38,7 @@ public class Veiculo {
         this.progressoNaAresta = 0.0;
         this.log = new Logs();
 
-        double tamanho = 8;
+        double tamanho = 10;
         double x = origem.getLongitude() - tamanho / 2;
         double y = origem.getLatitude() - tamanho / 2;
         this.rectangle = new Rectangle(x, y, tamanho, tamanho);
@@ -62,6 +62,7 @@ public class Veiculo {
         return null;
     }
 
+
     public Vertice getVerticeAtual() {
         return caminho.get(posicaoAtual);
     }
@@ -80,16 +81,16 @@ public class Veiculo {
         progressoNaAresta += velocidade;
 
         if (progressoNaAresta >= 1.0) {
-            // Aresta foi percorrida
+            progressoNaAresta = 0.0;
+
             posicaoAtual++;
             if (posicaoAtual >= caminho.getTamanho() - 1) {
                 chegouAoDestino = true;
-                atualizarPosicaoGrafica(); // coloca o veículo no destino
+                atualizarPosicaoGrafica(); // posiciona no destino final
                 return;
             }
 
-            progressoNaAresta = 0.0;
-            arestaAtual = calcularArestaAtual();
+            arestaAtual = calcularArestaAtual(); // atualizar após o incremento
         }
 
         atualizarPosicaoGrafica();
@@ -117,10 +118,15 @@ public class Veiculo {
     }
 
     private void atualizarPosicaoGrafica() {
-        if (arestaAtual == null) return;
-
-        Vertice origem = arestaAtual.getOrigem();
-        Vertice destino = arestaAtual.getDestino();
+        if (posicaoAtual + 1 >= caminho.getTamanho()) {
+            Vertice destino = caminho.get(caminho.getTamanho() - 1);
+            double tamanho = rectangle.getWidth();
+            rectangle.setX(destino.getLongitude() - tamanho / 2);
+            rectangle.setY(destino.getLatitude() - tamanho / 2);
+            return;
+        }
+        Vertice origem = caminho.get(posicaoAtual);
+        Vertice destino = caminho.get(posicaoAtual + 1);
 
         double x = origem.getLongitude() * (1 - progressoNaAresta) + destino.getLongitude() * progressoNaAresta;
         double y = origem.getLatitude() * (1 - progressoNaAresta) + destino.getLatitude() * progressoNaAresta;
@@ -128,5 +134,8 @@ public class Veiculo {
         double tamanho = rectangle.getWidth();
         rectangle.setX(x - tamanho / 2);
         rectangle.setY(y - tamanho / 2);
+        // resto do código permanece igual
     }
+
+
 }

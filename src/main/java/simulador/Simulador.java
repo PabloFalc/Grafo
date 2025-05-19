@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+import utils.LogSistema;
 import utils.Logs;
 import veiculo.Veiculo;
 
@@ -52,7 +53,7 @@ public class Simulador extends Application {
         Grafo grafo = gerador.gerar("json/mapa.json");
 
         double larguraTela = 1920;
-        double alturaTela = 1080;
+        double alturaTela = 800;
 
         // 1. Encontrar os valores mínimo e máximo
         double minLat = Double.MAX_VALUE;
@@ -197,12 +198,18 @@ public class Simulador extends Application {
     }
 
     private static Timeline getTimeline(Map<String, SimuladorSemaforo> semaforos, Lista<Veiculo> veiculos, Pane pane) {
-        Timeline timeline = new Timeline();
-        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(1), e -> {
+        LogSistema logSys = new LogSistema();
+
+        logSys.totalVeiculosCriados = veiculos.getTamanho();
+        logSys.totalSemaforos = semaforos.size();
+
+
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
 
             // Atualiza os semáforos
             for (SimuladorSemaforo controlador : semaforos.values()) {
                 controlador.tick();
+                logSys.ciclosSemaforosExecutados++;
             }
 
             // Atualiza os veículos
@@ -213,6 +220,8 @@ public class Simulador extends Application {
                     System.out.println("Veículo chegou ao destino e será removido.");
                     veiculos.removerPorPosicao(i);
                     pane.getChildren().remove(v.getRectangle());
+                    logSys.totalVeiculosAtivos--;
+                    logSys.totalVeiculosFinalizados++;
                     i--;
                     continue;
                 }
@@ -252,7 +261,7 @@ public class Simulador extends Application {
 
             }
         }));
-
+        logSys.tempoTotal++;
         timeline.setCycleCount(Timeline.INDEFINITE);
         return timeline;
     }
