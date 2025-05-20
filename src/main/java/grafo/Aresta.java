@@ -54,6 +54,12 @@ public class Aresta {
         return fila.remover();
     }
 
+    public double getComprimento() {
+        double dx = destino.getLongitude() - origem.getLongitude();
+        double dy = destino.getLatitude() - origem.getLatitude();
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
 
 
 

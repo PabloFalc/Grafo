@@ -25,7 +25,7 @@ public class Veiculo {
     private Aresta arestaAtual;
 
     private double progressoNaAresta = 0.0; // de 0.0 até 1.0
-    private double velocidade = 0.10; // ajuste conforme necessário
+    private double velocidade = 15; // ajuste conforme necessário
 
     public Veiculo(int id, Vertice origem, Vertice destino, Lista<Vertice> caminho, Color cor) {
         this.id = id;
@@ -53,13 +53,22 @@ public class Veiculo {
         Vertice atual = caminho.get(posicaoAtual);
         Vertice proximo = caminho.get(posicaoAtual + 1);
 
-        for (int i = 0; i < proximo.getArestasDeEntrada().tamanho; i++) {
-            Aresta a = proximo.getArestasDeEntrada().get(i);
-            if (a.getOrigem().getId().equals(atual.getId())) {
+
+        if (atual.getId().equals(proximo.getId())) {
+            System.out.println("⚠️ Proximo vértice igual ao atual, retornando null.");
+            return null;
+        }
+
+        for (int i = 0; i < atual.getArestasDeSaida().tamanho; i++) {
+            Aresta a = atual.getArestasDeSaida().get(i);
+            if (a.getDestino().getId().equals(proximo.getId())) {
                 return a;
             }
         }
-        return null;
+
+        System.out.println("⚠️ [find]Aresta não encontrada entre " + atual.getId() + " -> " + proximo.getId() + " " +
+                "para o veículo " + id);
+        return  null;
     }
 
 
@@ -68,17 +77,22 @@ public class Veiculo {
     }
 
     public Vertice getProximoVertice() {
+
         if (posicaoAtual + 1 < caminho.getTamanho()) {
             return caminho.get(posicaoAtual + 1);
-        } else {
+        }
+        else {
             return getVerticeAtual();
         }
     }
 
     public void mover() {
-        if (chegouAoDestino || arestaAtual == null) return;
+        if (chegouAoDestino || arestaAtual == null){
+            return;
+        }
 
-        progressoNaAresta += velocidade;
+        double comprimento = arestaAtual.getComprimento();
+        progressoNaAresta += velocidade/comprimento;
 
         if (progressoNaAresta >= 1.0) {
             progressoNaAresta = 0.0;
@@ -91,26 +105,39 @@ public class Veiculo {
             }
 
             arestaAtual = calcularArestaAtual(); // atualizar após o incremento
+            if(arestaAtual == null) {
+                throw new NullPointerException("asdasdasd");
+            }
         }
 
         atualizarPosicaoGrafica();
     }
 
     public Aresta getProximoAresta() {
-        if (chegouAoDestino || posicaoAtual + 1 >= caminho.getTamanho()) {
+        if (posicaoAtual + 1 >= caminho.getTamanho()) return null;
+        Vertice atual = caminho.get(posicaoAtual);
+        Vertice proximo = caminho.get(posicaoAtual + 1);
+
+        if (atual.getId().equals(proximo.getId())) {
+            System.out.println("⚠️ Proximo vértice igual ao atual, retornando null.");
             return null;
         }
 
-        Vertice atual = getVerticeAtual();
-        Vertice proximo = getProximoVertice();
+        if(proximo == null) {
+            System.out.println("é nulo");
+            proximo = atual;
+        }
 
-        for (int i = 0; i < atual.getArestasDeEntrada().tamanho; i++) {
-            Aresta a = atual.getArestasDeEntrada().get(i);
-            if (a.getOrigem().equals(proximo)) {
+        for (int i = 0; i < atual.getArestasDeSaida().tamanho; i++) {
+            Aresta a = atual.getArestasDeSaida().get(i);
+            if (a.getDestino().getId().equals(proximo.getId())) {
                 return a;
             }
         }
-        return null;
+
+        System.out.println("⚠️ [GET]Aresta não encontrada entre " + atual.getId() + " -> " + proximo.getId() + " " +
+                "para o veículo " + id);
+        return  null;
     }
 
     public boolean isInicio() {

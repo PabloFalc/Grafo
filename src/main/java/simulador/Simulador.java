@@ -36,11 +36,7 @@ import java.util.Map;
 public class Simulador extends Application {
 
     public static Lista<Vertice> filaParaLista(Fila<Vertice> fila) {
-        Lista<Vertice> lista = new Lista<>();
-        while (!fila.isEmpty()) {
-            lista.add(fila.remover());
-        }
-        return lista;
+        return fila.toList();
     }
     public static void main(String[] args) {
         launch(args);
@@ -52,7 +48,7 @@ public class Simulador extends Application {
         GeradorMapa<Grafo> gerador = new GeradorMapa<>();
         Grafo grafo = gerador.gerar("json/mapa.json");
 
-        double larguraTela = 1920;
+        double larguraTela = 1200;
         double alturaTela = 800;
 
         // 1. Encontrar os valores mínimo e máximo
@@ -205,7 +201,7 @@ public class Simulador extends Application {
 
 
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-
+            int counter = 0;
             // Atualiza os semáforos
             for (SimuladorSemaforo controlador : semaforos.values()) {
                 controlador.tick();
@@ -216,13 +212,13 @@ public class Simulador extends Application {
             for (int i = 0; i < veiculos.getTamanho(); i++) {
                 Veiculo v = veiculos.get(i);
 
+
                 if (v.isChegouAoDestino()) {
-                    System.out.println("Veículo chegou ao destino e será removido.");
+                    System.out.println("Veículo["+v.getId()+"] chegou ao destino e será removido.");
                     veiculos.removerPorPosicao(i);
                     pane.getChildren().remove(v.getRectangle());
                     logSys.totalVeiculosAtivos--;
                     logSys.totalVeiculosFinalizados++;
-                    i--;
                     continue;
                 }
 
@@ -256,8 +252,24 @@ public class Simulador extends Application {
                         v.setArestaAtual(proxima);
                     }
                 }
+                if(v.getProximoVertice() == null){
+                    System.out.println("Veículo parado:");
+                    System.out.println(" - ID: " + v.getId());
+                    System.out.println(" - Posição: " + v.getPosicaoAtual());
+                    System.out.println(" - Próximo destino: " + v.getProximoVertice());
+                }
 
-                v.mover();
+                try{
+                    v.mover();
+
+                }catch (NullPointerException exp){
+                    System.out.println("veiculo cagado");
+                    veiculos.removerPorPosicao(i);
+                    pane.getChildren().remove(v.getRectangle());
+                    logSys.totalVeiculosAtivos--;
+                    logSys.totalVeiculosFinalizados++;
+                    i--;
+                }
 
             }
         }));

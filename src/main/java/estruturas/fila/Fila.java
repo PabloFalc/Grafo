@@ -1,6 +1,7 @@
 package estruturas.fila;
 
 import estruturas.No;
+import estruturas.lista.Lista;
 
 public class Fila<Tipo> {
 
@@ -50,5 +51,16 @@ public class Fila<Tipo> {
 
     public boolean isEmpty() {
         return this.head == null;
+    }
+
+    public Lista<Tipo> toList(){
+        Lista<Tipo> lista = new Lista<>();
+        No<Tipo> no = this.head;
+        while(no.getProx() != null){
+            no = no.getProx();
+            lista.add(no.getValor());
+        }
+
+        return  lista;
     }
 }
