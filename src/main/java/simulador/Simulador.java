@@ -9,8 +9,12 @@ import grafo.Aresta;
 import grafo.Grafo;
 import grafo.Vertice;
 
+import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -21,6 +25,7 @@ import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+import utils.LogSistema;
 import utils.Logs;
 import veiculo.Veiculo;
 
@@ -31,11 +36,7 @@ import java.util.Map;
 public class Simulador extends Application {
 
     public static Lista<Vertice> filaParaLista(Fila<Vertice> fila) {
-        Lista<Vertice> lista = new Lista<>();
-        while (!fila.isEmpty()) {
-            lista.add(fila.remover());
-        }
-        return lista;
+        return fila.toList();
     }
     public static void main(String[] args) {
         launch(args);
@@ -46,11 +47,9 @@ public class Simulador extends Application {
         // Gerar grafo
         GeradorMapa<Grafo> gerador = new GeradorMapa<>();
         Grafo grafo = gerador.gerar("json/mapa.json");
-        System.out.println(grafo.getVertices().getTamanho());
-        System.out.println(grafo.getArestas().getTamanho());
 
-        double larguraTela = 1920;
-        double alturaTela = 1080;
+        double larguraTela = 1200;
+        double alturaTela = 800;
 
         // 1. Encontrar os valores mínimo e máximo
         double minLat = Double.MAX_VALUE;
@@ -67,10 +66,26 @@ public class Simulador extends Application {
             if (v.getLongitude() > maxLon) maxLon = v.getLongitude();
         }
 
-        System.out.println("Latitude: " + minLat + " a " + maxLat);
-        System.out.println("Longitude: " + minLon + " a " + maxLon);
-
         Pane pane = new Pane();
+
+        Button startPauseButton = new Button("Start");
+        Button stopButton = new Button("Stop");
+        ComboBox<Heuristica> heuristicaSelect = new ComboBox<>();
+        TextField inputVeiculos = new TextField("400");
+        startPauseButton.setLayoutX(10);
+        startPauseButton.setLayoutY(10);
+        stopButton.setLayoutX(80);
+        stopButton.setLayoutY(10);
+        heuristicaSelect.setLayoutX(150);
+        heuristicaSelect.setLayoutY(10);
+        inputVeiculos.setLayoutX(300);
+        inputVeiculos.setLayoutY(10);
+
+        heuristicaSelect.getItems().addAll(Heuristica.PADRAO, Heuristica.ENERGIA, Heuristica.ESPERA);
+        heuristicaSelect.setValue(Heuristica.PADRAO);
+
+        pane.getChildren().addAll(startPauseButton, stopButton, heuristicaSelect, inputVeiculos);
+
         double escala = 45000;
         double offsetX = 550;
         double offsetY = 225;
@@ -129,24 +144,47 @@ public class Simulador extends Application {
                     aresta.getDestino().getLongitude(), aresta.getDestino().getLatitude()
             );
             line.setStroke(Color.GRAY);
-            line.setStrokeWidth(3);
+            line.setStrokeWidth(4);
             pane.getChildren().add(0, line);
         }
 
-        //veiculo
-        int quantidadeVeiculos = 1200;
+        // 5. Criar veículos
         Lista<Veiculo> veiculos = new Lista<>();
         Lista<Rectangle> icones = new Lista<>();
-        for (int i = 0; i < quantidadeVeiculos; i++) {
-            Veiculo v = GeradorDeVeiculos.gerar(i + 1, grafo);
-            veiculos.add(v);
-            icones.add(v.getRectangle());
-            pane.getChildren().add(v.getRectangle());
-        }
 
+        final Timeline[] timeline = new Timeline[1];
+        timeline[0] = new Timeline();
 
-        final Timeline timeline = getTimeline(semaforos, veiculos , pane);
-        timeline.play();
+        startPauseButton.setOnAction(event -> {
+            if (timeline[0].getStatus() == Timeline.Status.RUNNING) {
+                timeline[0].pause();
+                startPauseButton.setText("Start");
+            } else {
+                // Inicializar veículos apenas na primeira vez
+                if (veiculos.getTamanho() == 0) {
+                    int quantidadeVeiculos = 1000;
+                    try {
+                        quantidadeVeiculos = Math.min(2000, Math.max(0, Integer.parseInt(inputVeiculos.getText())));
+                    } catch (NumberFormatException e) {
+                        inputVeiculos.setText("1000");
+                    }
+
+                    for (int i = 0; i < quantidadeVeiculos; i++) {
+                        Veiculo v = GeradorDeVeiculos.gerar(i + 1, grafo);
+                        veiculos.add(v);
+                        icones.add(v.getRectangle());
+                        pane.getChildren().add(v.getRectangle());
+                    }
+                }
+                timeline[0] = getTimeline(semaforos, veiculos , pane);
+                timeline[0].play();
+                startPauseButton.setText("Pause");
+            }
+        });
+
+        stopButton.setOnAction(event -> {
+            timeline[0].stop();
+        });
 
         // 6. Exibir a cena
         Scene scene = new Scene(pane, larguraTela, alturaTela);
@@ -156,22 +194,31 @@ public class Simulador extends Application {
     }
 
     private static Timeline getTimeline(Map<String, SimuladorSemaforo> semaforos, Lista<Veiculo> veiculos, Pane pane) {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+        LogSistema logSys = new LogSistema();
 
+        logSys.totalVeiculosCriados = veiculos.getTamanho();
+        logSys.totalSemaforos = semaforos.size();
+
+
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            int counter = 0;
             // Atualiza os semáforos
             for (SimuladorSemaforo controlador : semaforos.values()) {
                 controlador.tick();
+                logSys.ciclosSemaforosExecutados++;
             }
 
             // Atualiza os veículos
             for (int i = 0; i < veiculos.getTamanho(); i++) {
                 Veiculo v = veiculos.get(i);
 
+
                 if (v.isChegouAoDestino()) {
-                    System.out.println("Veículo chegou ao destino e será removido.");
+                    System.out.println("Veículo["+v.getId()+"] chegou ao destino e será removido.");
                     veiculos.removerPorPosicao(i);
                     pane.getChildren().remove(v.getRectangle());
-                    i--;
+                    logSys.totalVeiculosAtivos--;
+                    logSys.totalVeiculosFinalizados++;
                     continue;
                 }
 
@@ -205,12 +252,28 @@ public class Simulador extends Application {
                         v.setArestaAtual(proxima);
                     }
                 }
+                if(v.getProximoVertice() == null){
+                    System.out.println("Veículo parado:");
+                    System.out.println(" - ID: " + v.getId());
+                    System.out.println(" - Posição: " + v.getPosicaoAtual());
+                    System.out.println(" - Próximo destino: " + v.getProximoVertice());
+                }
 
-                v.mover();
+                try{
+                    v.mover();
+
+                }catch (NullPointerException exp){
+                    System.out.println("veiculo cagado");
+                    veiculos.removerPorPosicao(i);
+                    pane.getChildren().remove(v.getRectangle());
+                    logSys.totalVeiculosAtivos--;
+                    logSys.totalVeiculosFinalizados++;
+                    i--;
+                }
 
             }
         }));
-
+        logSys.tempoTotal++;
         timeline.setCycleCount(Timeline.INDEFINITE);
         return timeline;
     }
