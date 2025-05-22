@@ -19,6 +19,7 @@ public class Grafo {
     public void addVertice(Vertice novoVertice) {
         this.vertices.add(novoVertice);
     }
+
     public void addAresta(Aresta novaAresta) {
         Vertice inicio = this.getVertice(novaAresta.getDestino().getId());
         Vertice fim = this.getVertice(novaAresta.getOrigem().getId());

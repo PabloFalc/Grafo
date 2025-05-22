@@ -83,35 +83,23 @@ public class SimuladorSemaforo {
 
         configHeuristica();
 
-        if(!hasVeiculos() && resetTime == 0) {
-            return;
-        }
-
-        if(resetTime == 15){
-            resetTime = 0;
-            return;
-        }
-
         switch (estado) {
             case VERDE:
                 if (tempoAtual >= tempoVerde) {
                     switchCor();
                     tempoAtual = 0;
-                    resetTime++;
                 }
                 break;
             case AMARELO:
                 if (tempoAtual >= tempoAmarelo) {
                     switchCor();
                     tempoAtual = 0;
-                    resetTime++;
                 }
                 break;
             case VERMELHO:
                 if (tempoAtual >= tempoVermelho) {
                     switchCor();
                     tempoAtual = 0;
-                    resetTime++;
                 }
                 break;
         }
