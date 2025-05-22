@@ -34,7 +34,7 @@ public class SimuladorSemaforo {
         switch (heuristica) {
             case PADRAO:
                 this.tempoVerde = 4;
-                this.tempoVermelho = 4;
+                this.tempoVermelho = 10;
                 break;
 
             case ESPERA:
@@ -147,6 +147,10 @@ public class SimuladorSemaforo {
         }
         return false;
 
+    }
+
+    public Lista<Aresta> getArestasControladas(){
+        return arestasControladas;
     }
 
 
