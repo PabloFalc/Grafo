@@ -2,11 +2,14 @@ package estruturas.fila;
 
 import estruturas.No;
 import estruturas.lista.Lista;
+import lombok.Getter;
 
+@Getter
 public class Fila<Tipo> {
 
     private No<Tipo> head;
     private No<Tipo> tail;
+    private int tamanho;
 
     public Fila() {
         this.head = null;
@@ -23,6 +26,7 @@ public class Fila<Tipo> {
             no.setProx(this.head);
             this.head = no;
         }
+        tamanho++;
         return true;
     }
 
@@ -35,6 +39,7 @@ public class Fila<Tipo> {
             Tipo elemento = this.head.getValor();
             this.head = null;
             this.tail = null;
+            tamanho--;
             return elemento;
         }
 
@@ -46,6 +51,7 @@ public class Fila<Tipo> {
         Tipo elemento = this.tail.getValor();
         atual.setProx(null);
         this.tail = atual;
+        tamanho--;
         return elemento;
     }
 
@@ -56,11 +62,29 @@ public class Fila<Tipo> {
     public Lista<Tipo> toList(){
         Lista<Tipo> lista = new Lista<>();
         No<Tipo> no = this.head;
-        while(no.getProx() != null){
-            no = no.getProx();
+
+        for (int i = 0; i < tamanho; i++) {
+            if(no.getValor() == null){
+                break;
+            }
             lista.add(no.getValor());
+            no = no.getProx();
         }
 
         return  lista;
+    }
+
+    public Tipo get(int pos) {
+        if (pos < 0 || pos >= this.tamanho) {
+            return null;
+        }
+
+        No<Tipo> atual = this.head;
+
+        for (int i = 0; i < pos ; i++) {
+            atual = atual.getProx();
+        }
+
+        return atual.getValor();
     }
 }

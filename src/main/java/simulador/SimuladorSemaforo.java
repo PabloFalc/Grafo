@@ -60,8 +60,7 @@ public class SimuladorSemaforo {
                     totalVeiculosEnergia += arestasControladas.get(i).getFila().getTamanho();
                 }
 
-                boolean pico = (tempoAtual % 1200 >= 300 && tempoAtual % 1200 <= 600) ||
-                        (tempoAtual % 1200 >= 900 && tempoAtual % 1200 <= 1200);
+                boolean pico = tempoAtual % 1200 >= 300 && tempoAtual % 1200 <= 600 || tempoAtual % 1200 >= 900;
 
                 if (pico) {
                     tempoVerde = totalVeiculosEnergia >= 5 ? 6 : 4;
@@ -119,10 +118,6 @@ public class SimuladorSemaforo {
     }
 
 
-    public void configEnergia(){
-
-    }
-
     public boolean podePassar() {
         return estado == Led.VERDE || estado == Led.AMARELO;
     }
@@ -146,16 +141,6 @@ public class SimuladorSemaforo {
                 System.out.println("Erro ao switchCor");
         }
     }
-
-
-    private void tickEnergia(){
-
-
-
-
-
-    }
-
 
     private boolean hasVeiculos(){
         for(int i = 0; i< arestasControladas.tamanho; i++){
