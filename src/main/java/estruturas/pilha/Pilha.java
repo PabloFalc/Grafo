@@ -1,61 +1,42 @@
 package estruturas.pilha;
 
 import estruturas.No;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class Pilha<Tipo> {
-    No<Tipo> head;
+    private No<Tipo> topo;
     private int tamanho;
 
-    public Pilha(){
-        this.head = null;
+    public Pilha() {
+        this.topo = null;
         this.tamanho = 0;
     }
 
-    public boolean add(Tipo elemento){
-
-        No<Tipo> no = new No<Tipo>(elemento);
-        if(isEmpty()){
-            this.head = no;
-            this.tamanho++;
-            return true;
-        }
-        no.setAnt(this.head);
-        this.head.setProx(no);
-        this.head = no;
-        this.tamanho++;
+    public boolean add(Tipo elemento) {
+        No<Tipo> novo = new No<>(elemento);
+        novo.setProx(topo);
+        topo = novo;
+        tamanho++;
         return true;
     }
 
-    public Tipo remover(){
-        No<Tipo> no = this.head;
-        if(isEmpty()){
-            return null;
-        }
-        else if(size()== 1){
-            Tipo valor = this.head.getValor();
-            this.head = null;
-            this.tamanho--;
-            return valor;
-        }
+    public Tipo remover() {
+        if (topo == null) return null;
 
-        Tipo valor = this.head.getValor();
-        this.head = head.getAnt();
-        this.head.setProx(null);
-        no.setAnt(null);
-        this.tamanho--;
-        return valor;
-
+        Tipo elemento = topo.getValor();
+        topo = topo.getProx();
+        tamanho--;
+        return elemento;
     }
 
-    public Tipo ultimoElemento(){
-        return isEmpty() ? null : this.head.getValor();
+    public boolean isEmpty() {
+        return topo == null;
     }
 
-    public boolean isEmpty(){
-        return size() == 0;
-    }
-
-    public int size(){
-        return this.tamanho;
+    public Tipo peek() {
+        return topo != null ? topo.getValor() : null;
     }
 }

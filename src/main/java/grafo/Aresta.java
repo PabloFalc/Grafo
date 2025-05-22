@@ -1,31 +1,64 @@
 package grafo;
 
+import estruturas.fila.FilaLimite;
 import lombok.Getter;
 import lombok.Setter;
+import veiculo.Veiculo;
 
 @Getter
 @Setter
 public class Aresta {
-    /*
-
-"id": "2324867802-6410842748-0",
-"source": "2324867802",
-"target": "6410842748",
-"length": 346.304282800876,
-"travel_time": 0.0,
-"oneway": false,
-"maxspeed": 50.0
-    */
 
     private String id;
-    private Vertice source;
-    private Vertice target;
-    private int length;
+    private Vertice origem;
+    private Vertice destino;
+    private int tamanho;
     private double travel_time;
     private boolean oneway;
     private int maxspeed;
+    private FilaLimite<Veiculo> fila;
 
 
+    public Aresta(String id, int maxspeed, boolean oneway, double travel_time, int tamanho, Vertice destino,
+                  Vertice origem) {
+        this.id = id;
+        this.maxspeed = maxspeed;
+        this.oneway = oneway;
+        this.travel_time = travel_time;
+        this.tamanho = tamanho;
+        this.destino = destino;
+        this.origem = origem;
+    }
+
+    public Aresta(){
+
+    }
+
+    public void setFilaLimite(){
+        fila = new FilaLimite(this.tamanho/3);
+    }
+
+    public boolean hasVeliculos(){
+        return !fila.isEmpty();
+    }
+
+    public boolean isFull(){
+        return fila.isFull();
+    }
+
+    public boolean addVeiculo(Veiculo veiculo){
+        return fila.add(veiculo);
+    }
+
+    public Veiculo removeVeiculo(Veiculo veiculo){
+        return fila.remover();
+    }
+
+    public double getComprimento() {
+        double dx = destino.getLongitude() - origem.getLongitude();
+        double dy = destino.getLatitude() - origem.getLatitude();
+        return Math.sqrt(dx * dx + dy * dy);
+    }
 
 
 

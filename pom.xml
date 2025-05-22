@@ -27,6 +27,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.16.1</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>
@@ -49,7 +56,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>simulador.Main</mainClass>
+                    <mainClass>simulador.Simulador</mainClass>
                 </configuration>
             </plugin>
         </plugins>

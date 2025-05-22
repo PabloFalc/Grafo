@@ -33,9 +33,9 @@ public class Dijkstra {
             Lista<Aresta> adjacentes = atual.ArestasTotais();
             for (int i = 0; i < adjacentes.getTamanho(); i++) {
                 Aresta aresta = adjacentes.get(i);
-                Vertice vizinho = aresta.getTarget();
+                Vertice vizinho = aresta.getDestino();
                 if (!visitados.contains(vizinho)) {
-                    int novaDist = distancias.get(atual) + aresta.getLength();
+                    int novaDist = distancias.get(atual) + aresta.getTamanho();
                     if (novaDist < distancias.get(vizinho)) {
                         distancias.put(vizinho, novaDist);
                         anteriores.put(vizinho, atual);
