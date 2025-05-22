@@ -149,6 +149,10 @@ public class SimuladorSemaforo {
 
     }
 
+    public Lista<Aresta> getArestasControladas(){
+        return arestasControladas;
+    }
+
 
     public int getEnergia() {
         //cada ciclo de semáforo gasta 1 de energia

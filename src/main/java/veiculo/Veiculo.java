@@ -24,7 +24,7 @@ public class Veiculo {
     private int ticksParado = 0;
 
     private double progressoNaAresta = 0.0; // de 0.0 até 1.0
-    private double velocidade = 7.5; // ajuste conforme necessário
+    private double velocidade = 5.0; // ajuste conforme necessário
 
     public Veiculo(int id, Vertice origem, Vertice destino, Lista<Vertice> caminho, Color cor) {
         this.id = id;

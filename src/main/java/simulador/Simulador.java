@@ -254,7 +254,7 @@ public class Simulador extends Application {
                 // Verifica semáforo
                 if (proximo != null) {
                     SimuladorSemaforo semaforo = semaforos.get(proximo.getId());
-                    if (semaforo != null && !semaforo.podePassar() && v.getProgressoNaAresta() >= 0.65) {
+                    if (semaforo != null && !semaforo.podePassar() && v.getProgressoNaAresta() >= 0.65 && proximaAresta == semaforo.getArestasControladas().get(0)) {
                         podeMover = false;
                         v.setTempoEspera(v.getTempoEspera() + 1);
                         logSys.tempoEspera += v.getTempoEspera();
