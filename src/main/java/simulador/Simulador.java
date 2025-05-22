@@ -12,6 +12,7 @@ import grafo.Vertice;
 import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -129,9 +130,10 @@ public class Simulador extends Application {
                 Circle semaforoView = new Circle(vertice.getLongitude(), vertice.getLatitude(), 5, Color.GREEN);
                 pane.getChildren().add(semaforoView);
 
-                SimuladorSemaforo controlador = new SimuladorSemaforo(semaforoView, Heuristica.ENERGIA);
+                SimuladorSemaforo controlador = new SimuladorSemaforo(semaforoView, Heuristica.PADRAO);
                 controlador.setArestasControladas(vertice.getArestasDeEntrada());
                 semaforos.put(vertice.getId(), controlador);
+
             }
         }
 
@@ -155,18 +157,31 @@ public class Simulador extends Application {
         final Timeline[] timeline = new Timeline[1];
         timeline[0] = new Timeline();
 
+        LogSistema log = new LogSistema();
+        log.totalSemaforos = semaforos.size();
+
+
+        stopButton.setOnAction(event -> {
+            timeline[0].stop();
+            exibirLogModal(log);
+        });
+
         startPauseButton.setOnAction(event -> {
             if (timeline[0].getStatus() == Timeline.Status.RUNNING) {
                 timeline[0].pause();
                 startPauseButton.setText("Start");
+                exibirLogModal(log);
             } else {
                 // Inicializar veículos apenas na primeira vez
                 if (veiculos.getTamanho() == 0) {
-                    int quantidadeVeiculos = 1000;
+                    int quantidadeVeiculos = 5000;
                     try {
-                        quantidadeVeiculos = Math.min(2000, Math.max(0, Integer.parseInt(inputVeiculos.getText())));
+                        quantidadeVeiculos = Math.min(5000, Math.max(0, Integer.parseInt(inputVeiculos.getText())));
+                        log.totalVeiculosCriados = quantidadeVeiculos;
+                        log.totalVeiculosAtivos = quantidadeVeiculos;
+
                     } catch (NumberFormatException e) {
-                        inputVeiculos.setText("1000");
+                        inputVeiculos.setText("5000");
                     }
 
                     for (int i = 0; i < quantidadeVeiculos; i++) {
@@ -176,105 +191,138 @@ public class Simulador extends Application {
                         pane.getChildren().add(v.getRectangle());
                     }
                 }
-                timeline[0] = getTimeline(semaforos, veiculos , pane);
+
+
+                timeline[0] = getTimeline(semaforos, veiculos , pane, log);
                 timeline[0].play();
                 startPauseButton.setText("Pause");
             }
         });
-
-        stopButton.setOnAction(event -> {
-            timeline[0].stop();
-        });
-
         // 6. Exibir a cena
         Scene scene = new Scene(pane, larguraTela, alturaTela);
+        log.createTxt();
         stage.setTitle("Simulador com Coordenadas Normalizadas");
         stage.setScene(scene);
         stage.show();
     }
 
-    private static Timeline getTimeline(Map<String, SimuladorSemaforo> semaforos, Lista<Veiculo> veiculos, Pane pane) {
-        LogSistema logSys = new LogSistema();
+    private static Timeline getTimeline(Map<String, SimuladorSemaforo> semaforos, Lista<Veiculo> veiculos, Pane pane, LogSistema logSys) {
 
-        logSys.totalVeiculosCriados = veiculos.getTamanho();
-        logSys.totalSemaforos = semaforos.size();
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.01), e -> {
 
+            logSys.tempoTotal++;
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            int counter = 0;
-            // Atualiza os semáforos
+            // Atualiza semáforos
             for (SimuladorSemaforo controlador : semaforos.values()) {
                 controlador.tick();
                 logSys.ciclosSemaforosExecutados++;
             }
 
-            // Atualiza os veículos
+            // Atualiza veículos
             for (int i = 0; i < veiculos.getTamanho(); i++) {
                 Veiculo v = veiculos.get(i);
 
-
                 if (v.isChegouAoDestino()) {
-                    System.out.println("Veículo["+v.getId()+"] chegou ao destino e será removido.");
-                    veiculos.removerPorPosicao(i);
-                    pane.getChildren().remove(v.getRectangle());
-                    logSys.totalVeiculosAtivos--;
-                    logSys.totalVeiculosFinalizados++;
+                    removerVeiculo(pane, veiculos, logSys, i, false);
+                    i--;
                     continue;
                 }
 
                 Vertice proximo = v.getProximoVertice();
-                Aresta proxima = v.getProximoAresta();
+                Aresta proximaAresta = v.getArestaAtual();
+                boolean podeMover = true;
 
+                // Verifica semáforo
                 if (proximo != null) {
                     SimuladorSemaforo semaforo = semaforos.get(proximo.getId());
-                    if (semaforo != null && !semaforo.podePassar()) {
-                        continue; // Semáforo fechado
+                    if (semaforo != null && !semaforo.podePassar() && v.getProgressoNaAresta() >= 0.65) {
+                        podeMover = false;
+                        v.setTempoEspera(v.getTempoEspera() + 1);
                     }
                 }
 
+                // Controle de aresta
                 if (v.isInicio()) {
-                    v.setArestaAtual(proxima);
-                    if (proxima != null) {
-                        proxima.addVeiculo(v);
+                    if (proximaAresta != null) {
+                        v.setArestaAtual(proximaAresta);
+                        proximaAresta.addVeiculo(v);
                     }
                 } else {
-                    Aresta atual = v.getArestaAtual();
-                    if (proxima != null && proxima.isFull()) {
-                        continue; // Aresta futura cheia
-                    }
-
-                    if (atual != null) {
-                        atual.removeVeiculo(v);
-                    }
-
-                    if (proxima != null) {
-                        proxima.addVeiculo(v);
-                        v.setArestaAtual(proxima);
+                    Aresta arestaAtual = v.getArestaAtual();
+                    if (proximaAresta != null) {
+                        if (proximaAresta.isFull()) {
+                            podeMover = false;
+                            v.setTempoEspera(v.getTempoEspera() + 1);
+                        }
+                        if (arestaAtual != proximaAresta) {
+                            if (arestaAtual != null) arestaAtual.removeVeiculo(v);
+                            proximaAresta.addVeiculo(v);
+                            v.setArestaAtual(proximaAresta);
+                        }
                     }
                 }
-                if(v.getProximoVertice() == null){
-                    System.out.println("Veículo parado:");
-                    System.out.println(" - ID: " + v.getId());
-                    System.out.println(" - Posição: " + v.getPosicaoAtual());
-                    System.out.println(" - Próximo destino: " + v.getProximoVertice());
+
+                if (podeMover) {
+                    v.resetarTicksParado();
+                    try {
+                        v.mover();
+                    } catch (Exception exp) {
+                        removerVeiculo(pane, veiculos, logSys, i, true);
+                        i--;
+                    }
+                } else {
+                    v.incrementarTicksParado();
+
+                    if (v.getTicksParado() > 500) {
+                        boolean remover = true;
+
+                        if (proximo != null) {
+                            SimuladorSemaforo semaforo = semaforos.get(proximo.getId());
+                            if ((semaforo != null && !semaforo.podePassar()) ||
+                                    (proximaAresta != null && proximaAresta.isFull())) {
+                                remover = false;
+                            }
+                        }
+
+                        if (remover) {
+                            removerVeiculo(pane, veiculos, logSys, i, true);
+                            i--;
+                        }
+                    }
                 }
-
-                try{
-                    v.mover();
-
-                }catch (NullPointerException exp){
-                    System.out.println("veiculo cagado");
-                    veiculos.removerPorPosicao(i);
-                    pane.getChildren().remove(v.getRectangle());
-                    logSys.totalVeiculosAtivos--;
-                    logSys.totalVeiculosFinalizados++;
-                    i--;
-                }
-
             }
         }));
-        logSys.tempoTotal++;
+
         timeline.setCycleCount(Timeline.INDEFINITE);
         return timeline;
+    }
+
+    // Método utilitário para remoção de veículos
+    private static void removerVeiculo(Pane pane, Lista<Veiculo> veiculos, LogSistema logSys, int index, boolean defeituoso) {
+        Veiculo v = veiculos.get(index);
+        pane.getChildren().remove(v.getRectangle());
+        veiculos.removerPorPosicao(index);
+        logSys.totalVeiculosAtivos--;
+        if (defeituoso) {
+            logSys.veiculosDefeituosos++;
+        } else {
+            logSys.totalVeiculosFinalizados++;
+        }
+    }
+    private void exibirLogModal(LogSistema log) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Log do Sistema");
+        alert.setHeaderText("Resumo da Simulação");
+
+        String mensagem = "Tempo total de simulação: " + log.tempoTotal + "\n" +
+                "Total de veículos criados: " + log.totalVeiculosCriados + "\n" +
+                "Total de veículos finalizados: " + log.totalVeiculosFinalizados + "\n" +
+                "Total de veículos ativos: " + log.totalVeiculosAtivos + "\n" +
+                "Total de semáforos: " + log.totalSemaforos + "\n" +
+                "Ciclos de semáforos executados: " + log.ciclosSemaforosExecutados + "\n"+
+                "Veiculos com defeito: "+ log.veiculosDefeituosos;
+
+        alert.setContentText(mensagem);
+        alert.showAndWait();
     }
 }

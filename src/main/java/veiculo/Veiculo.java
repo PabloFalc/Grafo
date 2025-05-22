@@ -23,9 +23,10 @@ public class Veiculo {
     private int posicaoAtual;
     private boolean chegouAoDestino;
     private Aresta arestaAtual;
+    private int ticksParado = 0;
 
     private double progressoNaAresta = 0.0; // de 0.0 até 1.0
-    private double velocidade = 15; // ajuste conforme necessário
+    private double velocidade = 7.5; // ajuste conforme necessário
 
     public Veiculo(int id, Vertice origem, Vertice destino, Lista<Vertice> caminho, Color cor) {
         this.id = id;
@@ -37,7 +38,6 @@ public class Veiculo {
         this.chegouAoDestino = false;
         this.progressoNaAresta = 0.0;
         this.log = new Logs();
-
         double tamanho = 10;
         double x = origem.getLongitude() - tamanho / 2;
         double y = origem.getLatitude() - tamanho / 2;
@@ -113,33 +113,6 @@ public class Veiculo {
         atualizarPosicaoGrafica();
     }
 
-    public Aresta getProximoAresta() {
-        if (posicaoAtual + 1 >= caminho.getTamanho()) return null;
-        Vertice atual = caminho.get(posicaoAtual);
-        Vertice proximo = caminho.get(posicaoAtual + 1);
-
-        if (atual.getId().equals(proximo.getId())) {
-            System.out.println("⚠️ Proximo vértice igual ao atual, retornando null.");
-            return null;
-        }
-
-        if(proximo == null) {
-            System.out.println("é nulo");
-            proximo = atual;
-        }
-
-        for (int i = 0; i < atual.getArestasDeSaida().tamanho; i++) {
-            Aresta a = atual.getArestasDeSaida().get(i);
-            if (a.getDestino().getId().equals(proximo.getId())) {
-                return a;
-            }
-        }
-
-        System.out.println("⚠️ [GET]Aresta não encontrada entre " + atual.getId() + " -> " + proximo.getId() + " " +
-                "para o veículo " + id);
-        return  null;
-    }
-
     public boolean isInicio() {
         return this.posicaoAtual == 0;
     }
@@ -162,6 +135,14 @@ public class Veiculo {
         rectangle.setX(x - tamanho / 2);
         rectangle.setY(y - tamanho / 2);
         // resto do código permanece igual
+    }
+
+    public void incrementarTicksParado() {
+        ticksParado++;
+    }
+
+    public void resetarTicksParado() {
+        ticksParado = 0;
     }
 
 
