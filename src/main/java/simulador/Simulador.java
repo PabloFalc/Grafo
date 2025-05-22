@@ -72,7 +72,13 @@ public class Simulador extends Application {
         TextField inputVeiculos = new TextField("400");
         TextField inputVelocidade = new TextField("1");
         Label labelVeiculos = new Label("Quantidade de Veículos:");
-        Label labelVelocidade = new Label("Velocidade (s):");
+        Label labelVelocidade = new Label("Velocidade do carro (s):");
+        Label timerLabel = new Label("Tempo: 0s");
+        timerLabel.setLayoutX(10);
+        timerLabel.setLayoutY(100);
+        timerLabel.setMinWidth(200);
+        timerLabel.setMinHeight(40);
+        timerLabel.setTextFill(Color.RED);
         startPauseButton.setLayoutX(10);
         startPauseButton.setLayoutY(10);
         stopButton.setLayoutX(80);
@@ -81,17 +87,17 @@ public class Simulador extends Application {
         heuristicaSelect.setLayoutY(10);
         labelVeiculos.setLayoutX(10);
         labelVeiculos.setLayoutY(40);
-        inputVeiculos.setLayoutX(200);
+        inputVeiculos.setLayoutX(150);
         inputVeiculos.setLayoutY(40);
         labelVelocidade.setLayoutX(10);
         labelVelocidade.setLayoutY(70);
-        inputVelocidade.setLayoutX(200);
+        inputVelocidade.setLayoutX(150);
         inputVelocidade.setLayoutY(70);
 
         heuristicaSelect.getItems().addAll(Heuristica.PADRAO, Heuristica.ENERGIA, Heuristica.ESPERA);
         heuristicaSelect.setValue(Heuristica.PADRAO);
 
-        pane.getChildren().addAll(startPauseButton, stopButton, heuristicaSelect, inputVeiculos,inputVelocidade, labelVeiculos, labelVelocidade);
+        pane.getChildren().addAll(startPauseButton, stopButton, heuristicaSelect, inputVeiculos,inputVelocidade, labelVeiculos, labelVelocidade, timerLabel);
 
         double escala = 45000;
         double offsetX = 550;
@@ -200,7 +206,7 @@ public class Simulador extends Application {
 
                 double velocidade = Double.parseDouble(inputVelocidade.getText());
 
-                timeline[0] = getTimeline(semaforos, veiculos , pane, log, velocidade);
+                timeline[0] = getTimeline(semaforos, veiculos , pane, log, velocidade, timerLabel);
                 timeline[0].play();
                 startPauseButton.setText("Pause");
             }
@@ -214,10 +220,16 @@ public class Simulador extends Application {
         stage.show();
     }
 
-    private static Timeline getTimeline(Map<String, SimuladorSemaforo> semaforos, Lista<Veiculo> veiculos, Pane pane, LogSistema logSys, double velocidade) {
+    private static Timeline getTimeline(Map<String, SimuladorSemaforo> semaforos, Lista<Veiculo> veiculos, Pane pane, LogSistema logSys, double velocidade, Label timerLabel) {
+        double[] tempo = {0};
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(velocidade), e -> {
 
+
             logSys.tempoTotal++;
+            logSys.energiaTotal = semaforos.values().stream().mapToInt(SimuladorSemaforo::getEnergia).sum();
+
+            tempo[0] += velocidade;
+            timerLabel.setText(String.format("Tempo: %.1fs", tempo[0]));
 
             // Atualiza semáforos
             for (SimuladorSemaforo controlador : semaforos.values()) {
@@ -247,6 +259,7 @@ public class Simulador extends Application {
                     if (semaforo != null && !semaforo.podePassar() && v.getProgressoNaAresta() >= 0.65) {
                         podeMover = false;
                         v.setTempoEspera(v.getTempoEspera() + 1);
+                        logSys.tempoEspera += v.getTempoEspera();
                     }
                 }
 
@@ -262,6 +275,7 @@ public class Simulador extends Application {
                         if (proximaAresta.isFull()) {
                             podeMover = false;
                             v.setTempoEspera(v.getTempoEspera() + 1);
+                            logSys.tempoEspera += v.getTempoEspera();
                         }
                         if (arestaAtual != proximaAresta) {
                             if (arestaAtual != null) arestaAtual.removeVeiculo(v);
@@ -330,12 +344,13 @@ public class Simulador extends Application {
         alert.setHeaderText("Resumo da Simulação");
 
         String mensagem = "Tempo total de simulação: " + log.tempoTotal + "\n" +
+                "Energia total gasta pelos semáforos: " + log.energiaTotal + "\n" +
                 "Total de veículos criados: " + log.totalVeiculosCriados + "\n" +
                 "Total de veículos finalizados: " + log.totalVeiculosFinalizados + "\n" +
                 "Total de veículos ativos: " + log.totalVeiculosAtivos + "\n" +
                 "Total de semáforos: " + log.totalSemaforos + "\n" +
                 "Ciclos de semáforos executados: " + log.ciclosSemaforosExecutados + "\n"+
-                "Veiculos com defeito: "+ log.veiculosDefeituosos;
+                "Tempo de espera total dos veículos (ms) : " + log.tempoEspera+ "\n";
 
         alert.setContentText(mensagem);
         alert.showAndWait();

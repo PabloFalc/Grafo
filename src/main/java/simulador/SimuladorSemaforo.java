@@ -162,4 +162,8 @@ public class SimuladorSemaforo {
     }
 
 
+    public int getEnergia() {
+        //cada ciclo de semáforo gasta 1 de energia
+        return (tempoVerde + tempoVermelho + tempoAmarelo) / 10;
+    }
 }
