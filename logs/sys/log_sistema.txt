@@ -1,12 +1,12 @@
 Log do Sistema de Simulação
 ----------------------------
-Tempo total de simulação: 0
-Energia total gasta pelos semáforos: 0
-Total de veículos criados: 0
-Total de veículos finalizados: 0
-Total de veículos ativos: 0
+Tempo total de simulação: 9
+Energia total gasta pelos semáforos: 79
+Total de veículos criados: 400
+Total de veículos finalizados: 3
+Total de veículos ativos: 397
 Total de semáforos: 79
-Ciclos de semáforos executados: 0
+Ciclos de semáforos executados: 711
 Veiculos com defeito: 0
 Tempo de espera total dos vaículos: 0
 ----------------------------

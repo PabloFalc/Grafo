@@ -211,7 +211,6 @@ public class Simulador extends Application {
 
         // 6. Exibir a cena
         Scene scene = new Scene(pane, larguraTela, alturaTela);
-        log.createTxt();
         stage.setTitle("Simulador de Trânsito");
         stage.setScene(scene);
         stage.show();
@@ -354,6 +353,7 @@ public class Simulador extends Application {
                 "Tempo de espera total dos veículos (ms) : " + log.tempoEspera+ "\n";
 
         alert.setContentText(mensagem);
+        log.createTxt();
         alert.showAndWait();
     }
 }

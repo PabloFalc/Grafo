@@ -15,9 +15,6 @@
 
         private static final Color[] CORES = {
                 Color.CYAN,      // 1
-                Color.ORANGE,     // 2
-                Color.BEIGE,      // 3
-                Color.BLUE,       // 4
         };
 
         private static final Random random = new Random();
