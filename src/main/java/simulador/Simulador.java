@@ -9,7 +9,6 @@ import grafo.Aresta;
 import grafo.Grafo;
 import grafo.Vertice;
 
-import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -18,13 +17,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 import utils.LogSistema;
-import utils.Logs;
 import veiculo.Veiculo;
 
 import java.util.HashMap;
@@ -233,6 +230,7 @@ public class Simulador extends Application {
                 Vertice proximo = v.getProximoVertice();
                 Aresta proximaAresta = v.getArestaAtual();
                 if (v.isChegouAoDestino()) {
+                    System.out.println("veículo ["+v.getId()+"] tempo de espera total : " +  v.getTempoEspera());
                     proximaAresta.removeVeiculo(v);
                     removerVeiculo(pane, veiculos, logSys, i, false);
                     i--;
@@ -276,12 +274,14 @@ public class Simulador extends Application {
                     try {
                         v.mover();
                         if(proximaAresta == null){
+                            System.out.println("veículo ["+v.getId()+"] tempo de espera total : " +  v.getTempoEspera());
                             removerVeiculo(pane, veiculos, logSys, i, false);
                         }
                         if(proximaAresta != v.getArestaAtual() && proximaAresta != null) {
                             proximaAresta.removeVeiculo(v);
                         }
                     } catch (Exception exp) {
+                        System.out.println("veículo ["+v.getId()+"] tempo de espera total : " +  v.getTempoEspera());
                         removerVeiculo(pane, veiculos, logSys, i, true);
                         i--;
                     }
@@ -300,6 +300,7 @@ public class Simulador extends Application {
                         }
 
                         if (remover) {
+                            System.out.println("veículo ["+v.getId()+"] tempo de espera total : " +  v.getTempoEspera());
                             removerVeiculo(pane, veiculos, logSys, i, true);
                             i--;
                         }
