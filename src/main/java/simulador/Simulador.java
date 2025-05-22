@@ -350,7 +350,7 @@ public class Simulador extends Application {
                 "Total de veículos ativos: " + log.totalVeiculosAtivos + "\n" +
                 "Total de semáforos: " + log.totalSemaforos + "\n" +
                 "Ciclos de semáforos executados: " + log.ciclosSemaforosExecutados + "\n"+
-                "Tempo de espera total dos veículos (ms) : " + log.tempoEspera+ "\n";
+                "Tempo de espera total dos veículos (s) : " + log.tempoEspera+ "\n";
 
         alert.setContentText(mensagem);
         alert.showAndWait();
