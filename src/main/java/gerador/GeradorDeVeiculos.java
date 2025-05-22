@@ -16,7 +16,7 @@
         private static final Color[] CORES = {
                 Color.CYAN,      // 1
                 Color.ORANGE,     // 2
-                Color.BISQUE,      // 3
+                Color.BEIGE,      // 3
                 Color.BLUE,       // 4
         };
 
@@ -50,7 +50,7 @@
             if (numero >= 1 && numero <= CORES.length) {
                 return CORES[numero - 1];
             }
-            return Color.GRAY; // Cor padrão para valores inválidos
+            return Color.CYAN; // Cor padrão para valores inválidos
         }
 
     }

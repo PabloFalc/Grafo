@@ -49,27 +49,29 @@ public class Veiculo {
     }
 
     private Aresta calcularArestaAtual() {
-        if (posicaoAtual + 1 >= caminho.getTamanho()) return null;
-        Vertice atual = caminho.get(posicaoAtual);
-        Vertice proximo = caminho.get(posicaoAtual + 1);
+        while (posicaoAtual + 1 < caminho.getTamanho()) {
+            Vertice atual = caminho.get(posicaoAtual);
+            Vertice proximo = caminho.get(posicaoAtual + 1);
 
+            if (atual.getId().equals(proximo.getId())) {
+                System.out.println("⚠️ Vértices iguais: pulando " + proximo.getId());
+                posicaoAtual++;  // Pula o vértice redundante
+                continue;
+            }
 
-        if (atual.getId().equals(proximo.getId())) {
-            System.out.println("⚠️ Proximo vértice igual ao atual, retornando null.");
+            for (int i = 0; i < atual.getArestasDeSaida().tamanho; i++) {
+                Aresta a = atual.getArestasDeSaida().get(i);
+                if (a.getDestino().getId().equals(proximo.getId())) {
+                    return a;
+                }
+            }
+
+            System.out.println("⚠️ Aresta não encontrada entre " + atual.getId() + " e " + proximo.getId());
             return null;
         }
-
-        for (int i = 0; i < atual.getArestasDeSaida().tamanho; i++) {
-            Aresta a = atual.getArestasDeSaida().get(i);
-            if (a.getDestino().getId().equals(proximo.getId())) {
-                return a;
-            }
-        }
-
-        System.out.println("⚠️ [find]Aresta não encontrada entre " + atual.getId() + " -> " + proximo.getId() + " " +
-                "para o veículo " + id);
-        return  null;
+        return null;
     }
+
 
 
     public Vertice getVerticeAtual() {
@@ -106,6 +108,7 @@ public class Veiculo {
 
             arestaAtual = calcularArestaAtual(); // atualizar após o incremento
             if(arestaAtual == null) {
+                chegouAoDestino = true;
                 throw new NullPointerException("asdasdasd");
             }
         }

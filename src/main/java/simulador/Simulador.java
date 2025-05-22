@@ -12,10 +12,7 @@ import grafo.Vertice;
 import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -73,19 +70,28 @@ public class Simulador extends Application {
         Button stopButton = new Button("Stop");
         ComboBox<Heuristica> heuristicaSelect = new ComboBox<>();
         TextField inputVeiculos = new TextField("400");
+        TextField inputVelocidade = new TextField("1");
+        Label labelVeiculos = new Label("Quantidade de Veículos:");
+        Label labelVelocidade = new Label("Velocidade (s):");
         startPauseButton.setLayoutX(10);
         startPauseButton.setLayoutY(10);
         stopButton.setLayoutX(80);
         stopButton.setLayoutY(10);
         heuristicaSelect.setLayoutX(150);
         heuristicaSelect.setLayoutY(10);
-        inputVeiculos.setLayoutX(300);
-        inputVeiculos.setLayoutY(10);
+        labelVeiculos.setLayoutX(10);
+        labelVeiculos.setLayoutY(40);
+        inputVeiculos.setLayoutX(200);
+        inputVeiculos.setLayoutY(40);
+        labelVelocidade.setLayoutX(10);
+        labelVelocidade.setLayoutY(70);
+        inputVelocidade.setLayoutX(200);
+        inputVelocidade.setLayoutY(70);
 
         heuristicaSelect.getItems().addAll(Heuristica.PADRAO, Heuristica.ENERGIA, Heuristica.ESPERA);
         heuristicaSelect.setValue(Heuristica.PADRAO);
 
-        pane.getChildren().addAll(startPauseButton, stopButton, heuristicaSelect, inputVeiculos);
+        pane.getChildren().addAll(startPauseButton, stopButton, heuristicaSelect, inputVeiculos,inputVelocidade, labelVeiculos, labelVelocidade);
 
         double escala = 45000;
         double offsetX = 550;
@@ -192,23 +198,24 @@ public class Simulador extends Application {
                     }
                 }
 
+                double velocidade = Double.parseDouble(inputVelocidade.getText());
 
-                timeline[0] = getTimeline(semaforos, veiculos , pane, log);
+                timeline[0] = getTimeline(semaforos, veiculos , pane, log, velocidade);
                 timeline[0].play();
                 startPauseButton.setText("Pause");
             }
         });
+
         // 6. Exibir a cena
         Scene scene = new Scene(pane, larguraTela, alturaTela);
         log.createTxt();
-        stage.setTitle("Simulador com Coordenadas Normalizadas");
+        stage.setTitle("Simulador de Trânsito");
         stage.setScene(scene);
         stage.show();
     }
 
-    private static Timeline getTimeline(Map<String, SimuladorSemaforo> semaforos, Lista<Veiculo> veiculos, Pane pane, LogSistema logSys) {
-
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.01), e -> {
+    private static Timeline getTimeline(Map<String, SimuladorSemaforo> semaforos, Lista<Veiculo> veiculos, Pane pane, LogSistema logSys, double velocidade) {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(velocidade), e -> {
 
             logSys.tempoTotal++;
 
@@ -222,14 +229,16 @@ public class Simulador extends Application {
             for (int i = 0; i < veiculos.getTamanho(); i++) {
                 Veiculo v = veiculos.get(i);
 
+
+                Vertice proximo = v.getProximoVertice();
+                Aresta proximaAresta = v.getArestaAtual();
                 if (v.isChegouAoDestino()) {
+                    proximaAresta.removeVeiculo(v);
                     removerVeiculo(pane, veiculos, logSys, i, false);
                     i--;
                     continue;
                 }
 
-                Vertice proximo = v.getProximoVertice();
-                Aresta proximaAresta = v.getArestaAtual();
                 boolean podeMover = true;
 
                 // Verifica semáforo
@@ -266,6 +275,12 @@ public class Simulador extends Application {
                     v.resetarTicksParado();
                     try {
                         v.mover();
+                        if(proximaAresta == null){
+                            removerVeiculo(pane, veiculos, logSys, i, false);
+                        }
+                        if(proximaAresta != v.getArestaAtual() && proximaAresta != null) {
+                            proximaAresta.removeVeiculo(v);
+                        }
                     } catch (Exception exp) {
                         removerVeiculo(pane, veiculos, logSys, i, true);
                         i--;
